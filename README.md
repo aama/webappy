@@ -1,2 +1,2 @@
 # webappy
-prototype pythonapplication for creation, manipulation, and display of morphological paradigms
+prototype python application for creation, manipulation, and display of morphological paradigms
