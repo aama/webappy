@@ -1,28 +1,19 @@
 #!/usr/local/bin/python3
 '''
-Assembles sparql query from pvstring. In order:
+query() assembles sparql pdgmquery from pvstring. In order:
 Prefixes, Select statement, Prop-val triples, Selection triples,
-Order-by statement. Old version needs lang arg, new version
-takes lang from pvalue (= prop:val list which pdgmdbLANG.db)
-returns from valstring.
+Order-by 
+sourcequery() retrieves single-value targets, for the moment,
+source/reemark section(s). Later, lexeme lemma/gloss. (May
+eventually be combined with query?)
+formsquery() retrieves all forms meeting certain feature specifications.
 '''
-def query(pvalue,valstring,lang):
-
-    #pvstring = 'pos=Verb,conjClass=Prefix,tam=Aorist,polarity=Affirmative,rootClass=CVC,lexeme=\'bis\'%number,person,gender,token'
-    print(str("pvalue: " + pvalue))
-    print(str("valstring: " + valstring))
-    lpref = ldict[lang]
+def query(pvlist,valstring,lang):
+    print("\nFrom 'pdgmDispQuery.py': \n====================")
+    print(str("pvlist: " + str(pvlist)))
+    lpref = lname2labb[lang]
     lprefix = str("PREFIX " + lpref + ": <http://id.oi.uchicago.edu/aama/2013/" + lang + "/>")
     prefixes = str(prefixbase + lprefix + "\n")
-
-    # Select statement
-    # if no explicit selection string, use default
-    #if "%" in pvstring:
-    #    propsel = pvstring.split("%")
-    #    pvstring = propsel[0]
-    #    valstring = propsel[1]
-    #else:
-    #    valstring = "number,person,gender,token"
     
     selection = str("?" + valstring.replace(","," ?"))
     selection = selection.replace("-", "")
@@ -32,8 +23,9 @@ def query(pvalue,valstring,lang):
     # Triples
     triples = ''
     # 1. prop-val triples
-    pvlist = pvalue.split(",")
+    #pvlist = pvalue.split(",")
     print(str("pvlist= " + str(pvlist)))
+    print("Paradigm Common Property-Value Pairs:")
     for pv in pvlist:
         print("pv= " + str(pv))
         propval = pv.split(":")
@@ -46,6 +38,7 @@ def query(pvalue,valstring,lang):
         else:
             triple = str("    ?s " + lpref + ":" + propval[0] + " " + lpref + ":" + propval[1] + " .\n")
         triples = triples + triple
+
     # 2. selection triples
     sels = valstring.split(",")
     for sel in sels:
@@ -66,8 +59,6 @@ def query(pvalue,valstring,lang):
             triple = str("    OPTIONAL { ?s " + lpref + ":" + sel + " / rdfs:label ?" + sel2 + " }\n")
         triples = triples + triple
     triples = str(triples + "}\n")
-
-
     #order statement
     selection = selection.replace("?number", "DESC(?number)")
     selection = selection.replace("?gender ", "DESC(?gender)")
@@ -75,11 +66,54 @@ def query(pvalue,valstring,lang):
 
     query = str(prefixes + select + triples + order +  "\n")
 
-    # print("query: \n" + query)
+    print("=======================")
+    return query
+
+def sourcequery(pvlist,svalstring,lang):
+    #print("\nFrom 'pdgmDispQuery.py': \n====================")
+    #print("\nsourcequery function output: \n====================")
+    #print(str("pvalue: " + pvalue))
+    #print(str("svalstring: " + svalstring))
+    lpref = lname2labb[lang]
+    #print(str("lang, lpref: " + lang + ", " + lpref))
+    lprefix = str("PREFIX " + lpref + ": <http://id.oi.uchicago.edu/aama/2013/" + lang + "/>")
+    prefixes = str(prefixbase + lprefix + "\n")
+    # Selection
+    selection = str("?" + svalstring)
+    selection = selection.replace("-", "_")
+    select = str("SELECT DISTINCT " + selection + "\nWHERE\n{")
+    Lang = lang.capitalize()
+    # Triples
+    triples = ''
+
+    # 1. prop-val triples
+    #pvlist = pvalue.split(",")
+    #print(str("pvlist= " + str(pvlist)))
+    #print("\nParadigm Common Property-Value Pairs:")
+    for pv in pvlist:
+        #print(str(pv))
+        propval = pv.split(":")
+        if propval[0] == "language":
+            triple = str("    ?s aamas:lang aama:" + Lang + " .\n")
+        elif propval[0] == "lexeme":
+            triple = str("    ?s aamas:lexeme / rdfs:label \'" +  propval[1] + "\' .\n")
+        else:
+            triple = str("    ?s " + lpref + ":" + propval[0] + " " + lpref + ":" + propval[1] + " .\n")
+        triples = triples + triple
+
+    # 2. selection triple -- for the moment only 'source'
+    triple = str("    ?s aamas:memberOf / rdfs:comment  ?note .\n" )
+    triples = triples + triple
+    triples = str(triples + "}\n")
+
+    query = str(prefixes + select + triples )
+
     return query
 
 
 def formsquery(languages,qstring):
+    # To ask whether specific forms exist in one or more langs,
+    # e.g. whether 2f exists in [alagwa, . . .]
     # qstring = 'person=Person2,gender=Fem,number=?number,pos=?pos'
     # Select statement
     pvals = qstring.split(",")
@@ -98,7 +132,7 @@ def formsquery(languages,qstring):
     for lang in llist:
         print(str('lang = ' + lang))
         # Get lpref
-        lpref = ldict[lang]
+        lpref = lname2labb[lang]
         # Update prefixes
         lprefix = str("PREFIX " + lpref + ": <http://id.oi.uchicago.edu/aama/2013/" + lang + "/>")
         prefixes = str(prefixes + lprefix + "\n")
@@ -106,7 +140,7 @@ def formsquery(languages,qstring):
         triples += str('{GRAPH aamag:' + lang + '{\n')
         # triples += str('{GRAPH aamag:' + lang + '{\n?s ?p ?o .\n')
         # Get lpref
-        lpref = ldict[lang]
+        lpref = lname2labb[lang]
         # Triples
         # 1. prop-val triples
         #pvlist = pvalue.split(",")
@@ -137,7 +171,7 @@ def formsquery(languages,qstring):
 
     return query
 
-ldict = {'beja-hud': 'bhu', 'afar': 'afr', 'oromo': 'orm', 'somali': 'som', 'alaaba': 'alb', 'alagwa': 'alg', 'akkadian-ob': 'aob', 'aari': 'aar', 'arabic': 'arb', 'arbore': 'abr', 'awngi': 'awn', 'bayso': 'bay', 'beja-alm': 'bal','beja-rei': 'bre', 'beja-rop': 'bro', 'beja-van': 'bva', 'beja-wed': 'bwe', 'berber-ghadames': 'bgh', 'bilin': 'bil', 'boni-jara': 'boj', 'boni-kijee-bala': 'bob', 'boni-kilii': 'bok', 'burji': 'bur', 'burunge': 'brn', 'coptic-sahidic': 'csa', 'dahalo': 'dah', 'dasenech': 'das', 'dhaasanac': 'dha', 'dizi': 'diz', 'egyptian-middle': 'egm', 'elmolo': 'elm', 'gawwada': 'gaw', 'gedeo': 'ged', 'geez': 'gez', 'hadiyya': 'had', 'hausa': 'hau', 'hdi': 'hdi', 'hebrew': 'heb', 'iraqw': 'irq', 'kambaata': 'kam', 'kemant': 'kem', 'khamtanga': 'khm', 'koorete': 'kor', 'maale': 'mal', 'mubi': 'mub', 'rendille': 'ren', 'saho': 'sah', 'shinassha': 'shn', 'sidaama': 'sid', 'syriac': 'syr', 'tsamakko': 'tsm', 'wolaytta': 'wol', 'yaaku': 'yak', 'yemsa': 'yem'}
+lname2labb = {'beja-hud': 'bhu', 'afar': 'afr', 'oromo': 'orm', 'somali': 'som', 'alaaba': 'alb', 'alagwa': 'alg', 'akkadian-ob': 'aob', 'aari': 'aar', 'arabic': 'arb', 'arbore': 'abr', 'awngi': 'awn', 'bayso': 'bay', 'beja-alm': 'bal','beja-rei': 'bre', 'beja-rop': 'bro', 'beja-van': 'bva', 'beja-wed': 'bwe', 'berber-ghadames': 'bgh', 'bilin': 'bil', 'boni-jara': 'boj', 'boni-kijee-bala': 'bob', 'boni-kilii': 'bok', 'burji-sas': 'brs', 'burji-wed': 'brw','burunge': 'brn', 'coptic-sahidic': 'csa', 'dahalo': 'dah', 'dasenech': 'das', 'dhaasanac': 'dha', 'dizi': 'diz', 'egyptian-middle': 'egm', 'elmolo': 'elm', 'gawwada': 'gaw', 'gedeo': 'ged', 'geez': 'gez', 'hadiyya': 'had', 'hausa': 'hau', 'hdi': 'hdi', 'hebrew': 'heb', 'iraqw': 'irq', 'kambaata': 'kam', 'kemant': 'kem', 'khamtanga': 'khm', 'koorete': 'kor', 'maale': 'mal', 'mubi': 'mub', 'rendille': 'ren', 'saho': 'sah', 'shinassha': 'shn', 'sidaama': 'sid', 'syriac': 'syr', 'tsamakko': 'tsm', 'wolaytta': 'wol', 'yaaku': 'yak', 'yemsa': 'yem'}
         
     # Prefixes and select statement
 prefixbase = """
@@ -172,6 +206,20 @@ PREFIX aamag: <http://oi.uchicago.edu/aama/2013/graph/>
    ?lng rdfs:label ?language .
     }}
     UNION
+
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX aama: <http://id.oi.uchicago.edu/aama/2013/>
+PREFIX aamas: <http://id.oi.uchicago.edu/aama/2013/schema/>
+PREFIX aamag: <http://oi.uchicago.edu/aama/2013/graph/>
+PREFIX alb: <http://id.oi.uchicago.edu/aama/2013/alaaba/>
+SELECT DISTINCT ?source 
+WHERE
+{    ?s aamas:lang aama:Alaaba .
+    ?s alb:pos alb:Pronoun .
+    ?s alb:proClass alb:AbsPoss .
+    ?s aamas:memberOf / rdfs:comment ?source.
+}
+
 ''' 
  
 

@@ -12,6 +12,8 @@ out of the termcluster's 'common' sections :
   pdgm-label: gives propval list associated with each pdgm label
   labldb: db file assicated with pdgm-label
   pdgmdb: db file for mapping of val-string to propval string, 
+----------------
+04/04/24 - going back to separating lexical and morphotactic pdgms in pdgm-values.txt; append 'morph-' instead of 'morph' to pdgmvals 
 '''
 
 import json
@@ -43,9 +45,18 @@ for lang in languagenames:
       # Lists 'pnames' for display in reference pdgm selection list.
      # Gives the 'common' values for each reference pdgm, and indicates the
      # pdgm's props hthat are not the 'default' 'number person gender'
+
+     # File with pdgm 'names' for pdgm display pick list
      outfile1 = str('pvlists/' + lang + '-pdgm-values.txt')
+
+     # Possible to combine following two?
+     # 1. db file with full p:v equivalence for v,v,... (= 'pdggm name')
+     # [used in pdgmDispUI-ltsource.py]
      mdbfile = str('pvlists/' + lang + '-pdgmdb')
+     # 2. db file with full p:v equivalence for lng-v-v-... ( = 'pdgm label')
+     # [used in pdgmDispUI-formsearch.py]
      ldbfile = str('pvlists/' + lang + '-labldb')
+
      shelffile1 = shelve.open(mdbfile)
      shelffile2 = shelve.open(ldbfile)
 
@@ -57,10 +68,12 @@ for lang in languagenames:
      #pdgmdict = ''
      #pdgmlabels = ''
      #pprops = ''
-     pvallist = []
+     # These  will combine to form the outfile1 repo (for plabel display)
+     pvallexlist = []
+     pvalmphlist = []
      # get the number of pdgms in the file
      tccount = len(jdata['termclusters'])
-     print(str('tccount:' + str(tccount)))
+     print(str('tccount:' + str(tccount))) 
      for i in range(tccount):
          # read-in 'common' section
          plabel = jdata['termclusters'][i]['label']
@@ -92,12 +105,13 @@ for lang in languagenames:
          # tcprops order, but writes 'morph' if this is a 'morphClass' pdgm;
          #otherwise takes default (= alphabretic) order,
          # but puts pos at head and lexeme at tail
+         # NB tcprops ["default"] means that no pdgmPropOrder specified.
          if tcprops != ["default"]:
               for prop in tcprops:
                    for tup in tpltcc:
                         if tup[0] == prop:
                              if tup[0] ==  'morphClass':
-                                  pdgmvals.append(str('morph' + tup[1]))
+                                  pdgmvals.append(str('morph-' + tup[1]))
                                   pdgmpropvals.append(str(tup[0] + ":" + tup[1]))
                              else:
                                   pdgmvals.append(str(tup[1]))
@@ -110,7 +124,7 @@ for lang in languagenames:
                     elif tup[0] ==  'lexeme':
                          lexval = str(tup[1])
                     elif tup[0] ==  'morphClass':
-                         pdgmvals.append(str('morph' + tup[1]))
+                         pdgmvals.append(str('morph-' + tup[1]))
                          pdgmpropvals.append(str(tup[0] + ":" + tup[1]))
                     else:
                          pdgmvals.append(str(tup[1]))
@@ -145,18 +159,28 @@ for lang in languagenames:
          #pvalstring = (','.join(pdgmvals))
          #pdgmlabels += str('"' + plabel + '": "' + ppvstring + '",\n')
          #pdgmdict += str('"' + pvalstring + '": "' + ppvstring + '",\n')
-         pvallist.append(pvalstring)
+         if 'morph-' in pvalstring:
+              pvalmphlist.append(pvalstring)
+         else:
+              pvallexlist.append(pvalstring)
          #pprops += str(' ' + ppvstring2 + '\n')
+         #print(str(pvalstring + ' = ' + ppvstring))
+         #print(str(plabel + ' = ' + ppvstring))
          shelffile1[pvalstring] = ppvstring
          shelffile2[plabel] = ppvstring
+         # print(str(pvalstring + ' = ' + ppvstring))
+         
      shelffile1.close()
      shelffile2.close()
-     # write files with sorted pvals
-     pvalsort = sorted(pvallist)
-     #pvalsort.insert(0,str(','.join(tcprops)))
-     pvals = '\n'.join(pvalsort)
-     #pvals = '\n'.join(pvallist)
-     # pdgm-vals
+     # combine pvalmphlist and pvallexlist into file with sorted pvals
+     pvallexsort = sorted(pvallexlist)
+     pvalmphsort = sorted(pvalmphlist)
+     pvalslex = '\n'.join(pvallexsort)
+     pvalsmph = '\n'.join(pvalmphsort)
+     pvals = ''
+     lexhead = "+++++++++++++++++\nPARADIGMS-LEXICAL\n+++++++++++++++++\n"
+     mphhead = "\n+++++++++++++++++++++++\nPARADIGMS-MORPHOTACTIC\n+++++++++++++++++++++++\n"
+     pvals = str(lexhead + pvalslex + mphhead + pvalsmph)
      file = open(outfile1, "w")
      file.write(str(pvals))
      file.close()
@@ -180,4 +204,23 @@ Edit this file to eliminate vars that only contribute to outfiles 2,3,4
      file.write(str(pdgmlabels))
      file.close
 NOTE: script which generates these files script-bck/pdgmDict-newlists.py
+
+
+
+Verb,morph-StemFormBaseNasal,Base,NasExt,Suffix
+%tam,polarity,pngform ,token% 
+= 
+language:dhaasanac,pos:Verb,morphClass:StemFormBaseNasal,derivedStem:Base,derivedStemAug:NasExt,conjclass:Suffix
+%tam,polarity,pngform ,token%
+
+
+
+
+
+BAD:
+
+pvals: Verb,morph-StemFormBase_NasExt,Base_NasExt,Suffix%tam,polarity,pngform
+
+ppropval = pdgmdb[pvals] # get the full prop-val string
+
 '''

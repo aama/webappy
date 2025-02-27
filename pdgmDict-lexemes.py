@@ -7,6 +7,7 @@ current inventory of termclusters. It cretes two files:
    file;
 2) 'pdgm-PVN-LANG.txt': with the same information, but formatted
    for insertion in various pdgm and pname displays
+no. 3
 '''
 
 import json
@@ -28,6 +29,7 @@ languagenames = (language, )
 
 # For corpus:
 #languagenames = ('aari', 'afar', 'alaaba', 'alagwa', 'akkadian-ob', 'arabic', 'arbore', 'awngi', 'bayso', 'beja-alm', 'beja-hud', 'beja-rei', 'beja-rop', 'beja-van', 'beja-wed', 'berber-ghadames', 'bilin', 'boni-jara', 'boni-kijee-bala', 'boni-kilii', 'burji', 'burunge', 'coptic-sahidic', 'dahalo', 'dhaasanac', 'dizi', 'egyptian-middle', 'elmolo', 'gawwada', 'gedeo', 'geez', 'hadiyya', 'hausa', 'hdi', 'hebrew', 'iraqw', 'kambaata', 'kemant', 'khamtanga', 'koorete', 'maale', 'mubi', 'oromo', 'rendille', 'saho', 'shinassha', 'sidaama', 'somali', 'syriac', 'tsamakko', 'wolaytta', 'yaaku', 'yemsa')
+
 # NB: outfile 3 & 4, and lfilename2 are for definitive indices
 # in pvlists/, outfile 1&2 and lfilename are for preliminary
 
@@ -51,7 +53,7 @@ for lang in languagenames:
           lexEntry["gloss"] = "[y]"
           lexDict1[lex] = lexEntry
      print("pdgmLexemes:")
-     #print(lexDict1)
+     print(lexDict1)
      # actual lexemex collection
      lexSection = jdata['lexemes']
      lexDict2 = {}

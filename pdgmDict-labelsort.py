@@ -3,7 +3,7 @@
 File to be labeled and ordered is placed in dir webbapy/pdgmfiles
 labrled as LANG-sort-pdgms.json. Program replaces each termcluster 
 label with new label made from prop values of props entered with
-'pdgmPropOrder' prompt. Pdgm file with new promps is written out
+'pdgmPropOrder' prompt. Pdgm file with new props is written out
 to file LANG-labeled-sort-pdgms.json. After inspection, this file
 can be ordered by pdgmSort.py.
 [Temporary for dhaasanac trial:
@@ -15,7 +15,7 @@ of 'terms' as list of parallel lists (mimicking CSV output of query):
 
      ",_" => &
 
-Require text transformations after sorting:
+Required text transformations after sorting:
      ,_  => ,^J
      terms': => terms':^J
      ]]}  => ]]^J}
@@ -49,9 +49,10 @@ print(str('LANG: ' + lang))
 lfile = str('../aama-data/data/' + lang + '/' + lang + '-pdgms.json')
 lfilebck = str('../aama-data/data/' + lang + '/' + lang + '-pdgms-old.json')
 copy(lfile, lfilebck)
-# 'exploded' termcluster file
+# 'exploded'[i.e.standard output] termcluster file (temporary)
+# 'terms' section will need to be reformatted into AAMA 'pdgm' format
 outfile0 = str('pvlists/' + lang + '-ordered-pdgms-0.json')
-# formatted termclusterfile
+# formatted termcluster file
 outfile1 = str('pvlists/' + lang + '-termclusters.json')
 # Make new labels out of the 'common' values
 pdgmfile = open(lfile, 'r')
@@ -61,7 +62,7 @@ pdgmfile = open(lfile, 'r')
 # pdgmdict is the whloe language file
 pdgmdict = json.load(pdgmfile)
 #pdgmdict = dict(pdgms)
-print('pdgmdict in:')
+#print('pdgmdict in:')
 #print(pdgmdict)
 # The is the normative order of the pdgm props for this lang
 # pdgm labels will be the values for these props in the normative
@@ -77,7 +78,7 @@ print(tcprops)
 plabels = ''
 # get the number of pdgms in the file
 tccount = len(pdgmdict['termclusters'])
-#print(str('tccount: ' + str(tccount)))
+print(str('tccount: ' + str(tccount)))
 
 # New label string
 
@@ -98,8 +99,9 @@ for i in range(tccount):
                     if tup[0] == 'morphClass':
                          #print(tup[0])
                          #print(tup[1])
-                         # put '-' around morphclass'
-                         pdgmvals.append(str('morph' + '-' + tup[1] + '-')) 
+                         # Make 'morph' first item in label
+                         pdgmvals.insert(0,'morph')
+                         pdgmvals.append(str('-' + tup[1])) 
                     elif tup[0] == 'lexeme':
                          # put '-' around lexeme'
                          pdgmvals.append(str('-' + tup[1] + '-')) 
@@ -113,7 +115,8 @@ for i in range(tccount):
      pdgmdict['termclusters'][i]['label'] = plabel2
      plabel3 = pdgmdict['termclusters'][i]['label']
      #print(str('plabel3: ' + plabel3))
-     
+
+# Now sort termclusters by label     
 pdgms = pdgmdict['termclusters']
 #print('termclusters in:')
 #print(pdgms)
@@ -137,14 +140,14 @@ tctext = f.read()
 os.remove(outfile0)
 
 print("tctext")
-#print(tctext)
+# print(tctext)
 
-# re formulate 'termclusters'section
+# re-format 'termclusters'section
 
 # json.dump formulates output with one json constituent per line.
 # However in our scheme the paradigm structure 'terms' is a 
 # list of lists in whcih each  subllist represents a row of the pdgm.
-# Thust in order to approxmate the familiar pdgm 'table' format 
+# Thus in order to approxmate the familiar pdgm 'table' format 
 # it is necessary to delete CR ('\n') and intervening spaces,  
 # after each row-initial list bracket,  and between each row value.
 
@@ -163,16 +166,16 @@ s1 = " " * blank1
 s2 = " " * blank2
 
 tctextx = str(tctext).replace(str('[\n' + s1 +'"'),'["')
-print("\nX\n")
+# print("\nX\n")
 # print(tctextx)
 tctexty = tctextx.replace(str('",\n' + s1 + '"'), '" ,"')
-print("\nY\n")
+# print("\nY\n")
 # print(tctexty)
 tctextnew = tctexty.replace(str('"\n' + s2 + ']'),'"]')
-print("\nNew Textn")
+# print("\nNew Text\n")
 # print(tctextnew)
 
-# Keep a separate file of sorted and ordered paradibms
+# Keep a separate 'termclusters' file of sorted and ordered paradibms
 with open(outfile1, 'w') as f:
     f.write(tctextnew )
 
@@ -180,22 +183,27 @@ with open(outfile1, 'w') as f:
 
 # Prepare for replacement
 ftext1a = str('termclusters": ' + tctextnew + '}')
-print("ftext1a:")
-#print(ftext1a)
+# print("ftext1a:")
+# print(ftext1a)
+ftext1b = ftext1a.replace('\n', '\\n')
 
 # Open 'matrix' text
 with open(lfile) as f:
     ftext = f.read()
 ftext2 = ftext.replace('\n','\\n')
-# print("ftext2")
-# print(ftext2)
+#print("ftext2")
+#print(ftext2)
 
-# Replaace
-ftextnew1 = re.sub('termclusters.*]}', ftext1a, ftext2)
+# Replaace ew termclusters into lfile
+# For re.sub, make VERY SURE that lfile ends exactly with ']}'
+ftextnew1 = re.sub('termclusters.*]}', ftext1b, ftext2)
+#ftextnew1 = re.sub('termclusters.*]}', ftext1a, ftext)
 ftextnew2 = ftextnew1.replace('\\n','\n')
-print('ftextnew2')
-#print(ftextnew2)
+#print('ftextnew1')
+#print(ftextnew1)
 file = open(lfile, "w")
 file.write(ftextnew2)
 file.close
 
+'''
+DictList = {'a':'x','b':'y','c':'z','d':'w'}

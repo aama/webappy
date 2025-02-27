@@ -1,4 +1,3 @@
-
 #!/usr/local/bin/python3
 '''
 Draws up the morphological property-values sdhemata used in the
@@ -32,12 +31,16 @@ languagenames = (language, )
 # For corpus:
 #languagenames = ('aari', 'afar', 'alaaba', 'alagwa', 'akkadian-ob', 'arabic', 'arbore', 'awngi', 'bayso', 'beja-alm', 'beja-hud', 'beja-rei', 'beja-rop', 'beja-van', 'beja-wed', 'berber-ghadames', 'bilin', 'boni-jara', 'boni-kijee-bala', 'boni-kilii', 'burji', 'burunge', 'coptic-sahidic', 'dahalo', 'dhaasanac', 'dizi', 'egyptian-middle', 'elmolo', 'gawwada', 'gedeo', 'geez', 'hadiyya', 'hausa', 'hdi', 'hebrew', 'iraqw', 'kambaata', 'kemant', 'khamtanga', 'koorete', 'maale', 'mubi', 'oromo', 'rendille', 'saho', 'shinassha', 'sidaama', 'somali', 'syriac', 'tsamakko', 'wolaytta', 'yaaku', 'yemsa')
 
+# For coma corpus:
+#languagenames = ('aari', 'afar', 'alaaba', 'alagwa',  'arbore', 'awngi', 'bayso', 'beja-alm', 'beja-hud', 'beja-rei', 'beja-rop', 'beja-van', 'beja-wed',  'bilin', 'boni-jara', 'boni-kijee-bala', 'boni-kilii', 'burji', 'burunge', 'coptic-sahidic', 'dahalo', 'dhaasanac', 'dizi', 'elmolo', 'gawwada', 'gedeo', 'geez', 'hadiyya', 'iraqw', 'kambaata', 'kemant', 'khamtanga', 'koorete', 'maale', 'tsamakko', 'wolaytta', 'yaaku', 'yemsa')
+
 for lang in languagenames:
      print(str('\nLANG: ' + lang))
      lfile = str('../aama-data/data/' + lang + '/' + lang + '-pdgms.json')
      jdata = json.load(open(lfile))
      # The file which contains the new schema
      outfile1 = str('pvlists/' + lang + '-schemata.json')
+     # A summarizing file for display in pdgm display app
      outfile2 = str('pvlists/' + lang + '-pdgm-PVN.txt')
 
      # The original lfile with new schemta section
@@ -49,6 +52,7 @@ for lang in languagenames:
      # a simple alphabetically ordered set of beja-hud common prop-val tups
      tcpset = set()
      for i in range(tccount):
+          #print(str("tccount: " + str(i)))
           tccommon = jdata['termclusters'][i]['common']
           #cset = set()
           cset = set(tccommon.items())
@@ -126,7 +130,7 @@ for lang in languagenames:
      #jdata["schemata"] = pvdsorted
      #json.dump(jdata, fp=open(outfile3, 'w'), indent=2)     
 
-     print(str(lang + ' pvdsorted:'))
+     print(str('new ' + lang + ' schemata text: ' + outfile1))
      # print(pvdsorted)
      
      # Write 'schemata' to json file
@@ -156,16 +160,18 @@ for lang in languagenames:
      file = open(outfile2, "w")
      file.write(str(pvdsorted2))
      file.close
-
+     print('Schemata summary:')
+     print(str(pvdsorted2))
+     
      # Replace 'schemata' section in current updated lang file
      
-     # First open the newly made schemata file
+     # First re-open the newly made schemata file
      with open(outfile1) as f:
           ftext1 = f.read()
 
      # Prepare replacement text
      ftext1a = str('schemata": ' + ftext1 + ',\n  "lexemes": ')
-     print("ftext1a:")
+     # print("ftext1a:")
      # print(ftext1a)
 
      #Open 'matrix' text
@@ -174,10 +180,12 @@ for lang in languagenames:
      ftext2 = ftext.replace('\n','\\n')
      # print("ftext2")
      # print(ftext2)
-    
+     # subtitute the new shemata text for the old
+     # NOTE: FOLLOWING DOES NOT WORK FOR INITIAL 'SCHEMATA'
+     # (for an initial schemata, insert schemata file
      ftextnew1 = re.sub('schemata.*"lexemes": ', ftext1a, ftext2)
      ftextnew2 = ftextnew1.replace('\\n','\n')
-     print('ftextnew2')
+     # print('ftextnew2')
      #print(ftextnew2)
      file = open(lfile, "w")
      file.write(ftextnew2)
