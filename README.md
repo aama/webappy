@@ -11,10 +11,11 @@ language directories.
 2. Python scripts to maintain and prepare the data files.
 3. Python scripts to display and manipulate paradigm data.
 
-# 1. Shell scripts to launch and update the datastore.
+### 1. Shell scripts to launch and update the datastore.
 (The shell scripts are all basically the work of Gregg Reynolds.)
 
-    1.1 `fuseki.sh`: a script which launches the fuseki datastore. 
+    1.1 `fuseki.sh`: 
+This is the script which launches the fuseki datastore. 
 The function which launches and runs the datastore is  located in the 
 `~/jena` directory, and  uses as one of its arguments the 
 `aamaconfig.ttl`  configuration file. In addition to activating the 
@@ -22,7 +23,8 @@ datastore, this function  opens a web page  on `localhost:3030` where
 the datastore can be inspected, and where SPARQL queries can be 
 independently run against the datastore.
 
-    1.2 `aama-datastore-update.sh ../aama-data/data/[LANG]`: This script 
+    1.2 `aama-datastore-update.sh ../aama-data/data/[LANG]`:
+ This script 
 needs to be run whenever new or revised data are added 
 to a language's data file in one of the
 `~/aama-data/data/` language directories. The script calls  
@@ -32,12 +34,14 @@ deletion, `aama-ttl2fuseki.sh`  to load a new language graph into the
 datastore, and `aama-cp2lngrepo.sh` to upload the new/transformed  data 
 to the local and github repositories.
 
-    1.3 `aama-cpwebappy2lngrepo.sh`: Performs the same functions for
+    1.3 `aama-cpwebappy2lngrepo.sh`: 
+This script erforms the same copy and upload functions for
 the application shell and Python scripts. 
 
-# 2. Python scripts to generate indices and transformations of the json data files. 
+### 2. Python scripts to generate indices and transformations of the json data files. 
 
-    2.1 `pdgmDict-pvlists.py [LANG]`: This generates a file 
+    2.1 `pdgmDict-pvlists.py [LANG]`: 
+This script generates a file 
 `pvlists/[LANG]-pdgm-values.txt` which contains a 'name' for
 each paradigm, consisting of a comma-separated list of the values of
 each of the morphological properties enumerated in the `common` section
@@ -49,7 +53,8 @@ each paradigm 'name' respectively with a full 'property:value' list
 and a paradigm 'label' mor-or-less arbitrarily assigned to the paradigm 
 when the json file was first created.
 
-    2.2 'pdgmDict-schemata.py [LANG]`: This generates a json 
+    2.2 'pdgmDict-schemata.py [LANG]`: 
+This script generates a json 
 property:value-list dictionary `pvlists/[LANG]-schemata.json` to be
 substituted into the `[LANG]-pdgms.json` file every time a property
 or value is added or changed in any way. It also generates a more
@@ -59,17 +64,19 @@ value of the `pdgmPropOrder` variable from the `[LANG]-pdgms.json` file,
 which determines the order of the properties whose values constitute
 the paradigm 'name'.
         
-    2.3 `pdgmDict-lexemes.py [LANG]`: This script assures that there is 
+    2.3 `pdgmDict-lexemes.py [LANG]`: 
+This script assures that there is 
 at least  a dummy lexeme-section  entry (with `lemma = '[x]', gloss = '[y]'`)
 for every lexeme used in a paradigm.
 
-    2.2 `pdgmDict-json2ttl.py [LANG]`: After all the foregoing
+    2.4 `pdgmDict-json2ttl.py [LANG]`: 
+After all the foregoing
 file modifications, this script transforms, section
 by section, the `[LANG]-pdgms.jspn` file into a '[LANG}-pdgms.ttl`, and 
 includes some 'predicates' from the various RDF semantics applications.
 (It is derived from an xsl file originally written by Gregg Reynolds.) 
 
-# 3. Python scripts to display and manipulate paradigm data.
+### 3. Python scripts to display and manipulate paradigm data.
 
 The two current data-display/manippulation (pdgmDispUI-) scripts are
 descended from an earlier more integrated browser applicatio, which
@@ -86,7 +93,8 @@ commands, the bulk of the script consists of the functions called
 by the widget (princiipally Button) 'command' argument.
 
 
-    3.1 `pdgmDispUI-baseApp.py`: The graphic setup is a two-colum
+    3.1 `pdgmDispUI-baseApp.py`: 
+The graphic setup is a two-colum
 display with, in the left column, a language select-list, where a language
 choice results in a middle box diwsplay of the property-value inventory
 of the language's paradigm set, along with an indication of the order of
@@ -109,7 +117,8 @@ enter *3,5:tam*  in the text box, push the 'Combine Paradigms' button,
 and see (for the moment) a sequential display of the paradigms, and a
 display 'pivoted' on the value for 'tam'.
 
-    3.2 `pdgmDispUI-formsearch.py`: This script is for the comparison of
+    3.2 `pdgmDispUI-formsearch.py`: 
+This script is for the comparison of
 realizations of a given property/value combination in different
 languages. Two or more languages can be selected from the upper-right
 language-selection list. In an Entry box below a list of
@@ -133,7 +142,8 @@ the full paradigm, sequentially numbered, in the lower right-hand text
 box. For moore precise comparison one could then go on to 'combine'
 the paradigms as in the baseApp script
 
-    3.3 `pdgmDispQuery.py`: Each of the display scripts, 3.1 and 3.2,
+    3.3 `pdgmDispQuery.py`: 
+Each of the display scripts, 3.1 and 3.2,
 finds the data it displays by a SOARQL query against the AAMA datastore.
 These queries are formed from the display data request by one of the
  `query()` functions contained in this script which has been imported
