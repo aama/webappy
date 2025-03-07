@@ -16,16 +16,15 @@ language directories.
 
     1.1 `fuseki.sh`: 
 This is the script which launches the fuseki datastore. 
-The function which launches and runs the datastore is  located in the 
+The Ruby function which actually launches and runs the datastore is located in the 
 `~/jena` directory, and  uses as one of its arguments the 
 `aamaconfig.ttl`  configuration file. In addition to activating the 
-datastore, this function  opens a web page  on `localhost:3030` where 
+datastore, this function opens a web page  on `localhost:3030` where 
 the datastore can be inspected, and where SPARQL queries can be 
 independently run against the datastore.
 
     1.2 `aama-datastore-update.sh ../aama-data/data/[LANG]`:
- This script 
-needs to be run whenever new or revised data are added 
+ This script needs to be run whenever new or revised data are added 
 to a language's data file in one of the
 `~/aama-data/data/` language directories. The script calls  
 `fudelete.sh` to delete the former language graph, `fuquery-gen.sh`
@@ -35,7 +34,7 @@ datastore, and `aama-cp2lngrepo.sh` to upload the new/transformed  data
 to the local and github repositories.
 
     1.3 `aama-cpwebappy2lngrepo.sh`: 
-This script erforms the same copy and upload functions for
+This script performs the same copy and upload functions for
 the application shell and Python scripts. 
 
 ### 2. Python scripts to generate indices and transformations of the json data files. 
@@ -79,7 +78,7 @@ includes some 'predicates' from the various RDF semantics applications.
 ### 3. Python scripts to display and manipulate paradigm data.
 
 The two current data-display/manipulation (pdgmDispUI-) scripts are
-descended from an earlier more integrated browser applicatio, which
+descended from an earlier more integrated browser application, which
 included both the display and formatting applications and was written
 in Clojure. We expect this version also to eviolve into such a more
 integraed browser-oriented from. 
@@ -97,21 +96,7 @@ by the widget (princiipally Button) 'command' argument.
 The graphic setup is a two-colum
 display with, in the left column, a language select-list, where a language
 choice results in a middle box display of the property-value inventory
-of the language's paradigm set, along with an indication of the order of
-properties in the value-list names of the paradigm, followed by a
-select-list of paradigm 'names'. A 'Display Paradigm' button at the
-bottom of the column results in a sequentially numbered display in
-the right text-box of the paradigm name, source, notes if present, 
-and the paradigm itself. 
-
-If one wishes to see a sequential or side-by-side disiplay of two 
-(or more) paradigms, at the bottom of the right-hand side allows the 
-entering of a comma-separated list of the sequence-numbers of two or more
- displayed paradigms, followed by a colon, followed by an indication
-of the 'pivot' category to be compared.
-
-For example if the third and fifth paradigm displayed were the Present
-and Perfedt 'tam' value of the Afar Class1 Verb Affirmative  uduur, and 
+of the languag=++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++T0-----------------------======================b Affirmative  uduur, and 
 one wanted a side-by-side display of these tam forms, one wou;d
 enter *3,5:tam*  in the text box, push the 'Combine Paradigms' button,
 and see (for the moment, first) a sequential display of the paradigms, and a
