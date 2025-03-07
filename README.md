@@ -96,7 +96,21 @@ by the widget (princiipally Button) 'command' argument.
 The graphic setup is a two-colum
 display with, in the left column, a language select-list, where a language
 choice results in a middle box display of the property-value inventory
-of the languag=++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++T0-----------------------======================b Affirmative  uduur, and 
+of the language's paradigm set, along with an indication of the order of
+properties in the value-list names of the paradigm, followed by a
+select-list of paradigm 'names'. A 'Display Paradigm' button at the
+bottom of the column results in a sequentially numbered display in
+the right text-box of the paradigm name, source, notes if present, 
+and the paradigm itself. 
+
+If one wishes to see a sequential or side-by-side disiplay of two 
+(or more) paradigms, at the bottom of the right-hand side allows the 
+entering of a comma-separated list of the sequence-numbers of two or more
+ displayed paradigms, followed by a colon, followed by an indication
+of the 'pivot' category to be compared.
+
+For example if the third and fifth paradigm displayed were the Present
+and Perfedt 'tam' value of the Afar Class1 Verb Affirmative  uduur, and 
 one wanted a side-by-side display of these tam forms, one wou;d
 enter *3,5:tam*  in the text box, push the 'Combine Paradigms' button,
 and see (for the moment, first) a sequential display of the paradigms, and a
