@@ -12,10 +12,10 @@
 #. bin/constants.sh
 
 
-fs=`find $1 -name "*.edn"`
+fs=`find $1 -name "*.json"`
 for f in $fs
 do
-    l=${f%-pdgms.edn}
+    l=${f%-pdgms.json}
     lang=${l#data/*/}
     echo "$lang ********************************************"
     echo pulling data to aama/$lang
