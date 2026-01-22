@@ -14,8 +14,7 @@
 #. bin/constants.sh
 
 # echo "fuload.log" > logs/fuload.log;
-# for f in `find $1 -name *.rdf`
-for f in `find $1 -name *.ttl`
+for f in `find $1 -name "*.ttl"`
 do
     # l=${f%.rdf}
     l=${f%.ttl}
