@@ -16,14 +16,13 @@ do
   lang=${l##../aama-data/data/*/}
   echo "$lang *****************************************"
   echo "copying $f to aama/data/$lang"
-  #cp ../aama-data/data/$lang/$lang-pdgms\.edn ../aama/data/$lang/
-  cp ~/aama-data/data/$lang/$lang-pdgms\.ttl ~/aama/data/$lang/  
+  #cp ~/aama-data/data/$lang/$lang-pdgms\.ttl ~/aama/data/$lang/  
   cp ~/aama-data/data/$lang/$lang-pdgms\.json ~/aama/data/$lang/
   cd ~/aama/data/$lang
   #git add *.edn
-  git add *.ttl
+  #git add *.ttl
   git add *.json
-  git commit -am "json/ttl replacing edn/ttl added (after json2ttl in aama-data)"
+  git commit -am "json replacing edn/ttl added (after aama-json2ttl in aama-data)"
   git push origin master
   cd ~/webappy
 done
