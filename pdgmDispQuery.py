@@ -11,10 +11,52 @@ formsquery() retrieves all forms meeting certain feature specifications.
 def query(pvlist,valstring,lang):
     print("\nFrom 'pdgmDispQuery.py': \n====================")
     print(str("pvlist: " + str(pvlist)))
+    print(str("valstring: " + valstring))
+
+    #Prefixes
     lpref = lname2labb[lang]
     lprefix = str("PREFIX " + lpref + ": <http://id.oi.uchicago.edu/aama/2013/" + lang + "/>")
     prefixes = str(prefixbase + lprefix + "\n")
     
+    # NOTE:
+    # This version allows the selection of a subset of a property's
+    # values, used in baseapp4 to display, given a set of prop and vals 
+    # (say: 'V 3mSg Aff') the forms of this set for a selection of
+    # the values of one or more other properties (say: the 'tam' values
+    # for a subset of values, e.g. only the 'Prefix' and 'Suffix' 
+    # values of the large 'conjClass' property in Afar.
+    # Format in valstring: 'conjClass:Prefix+Suffix'.
+    # This allows a displayable Pandas pivot table, which would 
+    # otherwise exceed the tkinter display capacity if all the values
+    # of 'conjClass' were chosen.
+
+    VALUES = ""
+    valuelist = []
+    vallist = valstring.split(",")
+    for val in vallist:
+        if ":" in val:
+            # NB There should be a ':' in vallist ONLY if
+            # among the possible values of a prop only a
+            # subselection is wanted: 'prop:val1+val2+val3'
+            # means "for 'prop' take only the values 'val1,val2,val3'"
+            valueslist = val.split(":")
+            valuelist.append(valueslist[0])
+            values = valueslist[1].split("+")
+            VALS = str("VALUES ?" + valueslist[0] + " {")
+            for vals in values:
+                VALS = str('  ' + VALS + '"' + vals + '" ' )
+            VALS = str(VALS + "}\n")
+            VALUES = str(VALUES + VALS)
+        else:
+            valuelist.append(val)
+    valstring = ','.join(valuelist) 
+
+    print(str("valuelist: " + str(valuelist)))
+    print(str("valstring: " + valstring))
+    print(str("VALUES: " + VALUES))
+
+    #HERE!
+
     selection = str("?" + valstring.replace(","," ?"))
     selection = selection.replace("-", "")
     select = str("SELECT DISTINCT " + selection + "\nWHERE\n{")
@@ -23,8 +65,8 @@ def query(pvlist,valstring,lang):
     # Triples
     triples = ''
     # 1. prop-val triples
-    #pvlist = pvalue.split(",")
-    print(str("pvlist= " + str(pvlist)))
+
+    #print(str("pvlist= " + str(pvlist)))
     print("Paradigm Common Property-Value Pairs:")
     for pv in pvlist:
         print("pv= " + str(pv))
@@ -40,46 +82,62 @@ def query(pvlist,valstring,lang):
         triples = triples + triple
 
     # 2. selection triples
-    sels = valstring.split(",")
-    for sel in sels:
+    # sels = valstring.split(",")
+    for sel in valuelist:
         sel2 = sel.replace("-", "")
+
+        # In the following apparently trying to introduce structure
+        # into tokenNote by introducing something termed 'token-note;
+        # Dosen't seem to work -- but would come back to this.
         # Want to insist on "token" but let "token-note" be optional
-        if sel[0:5] == "token":
-            if sel[5::] == '-note':
-                triple = str("    OPTIONAL { ?s " + lpref + ":token-note  ?" + sel2 + " }\n")
-            else:
-                triple = str("   OPTIONAL { ?s " + lpref + ":token  ?" + sel2 + " }\n")
-        #elif sel == "tokenNote":
-            #triple = str("    ?s " + lpref + ":tokenNote ?tokenNote .\n")
+        #if sel[0:5] == "token":
+        #    if sel[5::] == '-note':
+        #        triple = str("    OPTIONAL { ?s " + lpref + ":token-note  ?" + sel2 + " }\n")
+        #    else:
+
+        if sel == "token":
+            triple = str("    ?s " + lpref + ":token  ?" + sel2 + " .\n")
+        elif sel[0:9] == "token-note":
+            triple = str("    ?s " + lpref + ":" + sel + " ?token-note .\n")
         elif sel == "lexeme":
             triple = str("    ?s aamas:lexeme / rdfs:label ?" + sel2 + " .\n")
+
+        elif sel == "gloss":
+            triple = str("    ?s aamas:lexeme / aamas:gloss ?" + sel2 + " .\n")
+
         elif sel  == "language":
             triple = str("    ?s aamas:lang / rdfs:label ?" + sel2 + " .\n")
+       # See if we can simply do without "OPTIOAAL". Not sure why I put
+       # it in in the first place. In any case creates difficulties when 
+       # single searched item gets marked as OPTIONAL as in, e.g.
+       # Afar: Verb,Prefix,uduur%nonFiniteForm,token%   [08/02/25]
+       # else:
+       #     triple = str("    OPTIONAL { ?s " + lpref + ":" + sel + " / rdfs:label ?" + sel2 + " }\n")
         else:
-            triple = str("    OPTIONAL { ?s " + lpref + ":" + sel + " / rdfs:label ?" + sel2 + " }\n")
+            triple = str("    ?s " + lpref + ":" + sel + " / rdfs:label ?" + sel2 + " . \n")
         triples = triples + triple
-    triples = str(triples + "}\n")
+    triples = str(triples + VALUES + "}\n")
     #order statement
     selection = selection.replace("?number", "DESC(?number)")
     selection = selection.replace("?gender ", "DESC(?gender)")
     order = str("ORDER BY " + selection)
 
     query = str(prefixes + select + triples + order +  "\n")
-
+    print(str("query:\n" + query))
     print("=======================")
     return query
 
 def sourcequery(pvlist,svalstring,lang):
-    #print("\nFrom 'pdgmDispQuery.py': \n====================")
+    print("\nFrom 'pdgmDispQuery.py': \n====================")
     #print("\nsourcequery function output: \n====================")
     #print(str("pvalue: " + pvalue))
-    #print(str("svalstring: " + svalstring))
+    print(str("svalstring: " + svalstring))
     lpref = lname2labb[lang]
     #print(str("lang, lpref: " + lang + ", " + lpref))
     lprefix = str("PREFIX " + lpref + ": <http://id.oi.uchicago.edu/aama/2013/" + lang + "/>")
     prefixes = str(prefixbase + lprefix + "\n")
     # Selection
-    selection = str("?" + svalstring)
+    selection = str("?" + svalstring.replace(","," ?"))
     selection = selection.replace("-", "_")
     select = str("SELECT DISTINCT " + selection + "\nWHERE\n{")
     Lang = lang.capitalize()
@@ -96,7 +154,7 @@ def sourcequery(pvlist,svalstring,lang):
         if propval[0] == "language":
             triple = str("    ?s aamas:lang aama:" + Lang + " .\n")
         elif propval[0] == "lexeme":
-            triple = str("    ?s aamas:lexeme / rdfs:label \'" +  propval[1] + "\' .\n")
+            triple = str("    ?s aamas:lexeme / rdfs:label \'" +  propval[1] + "\' .\n    ?s aamas:lexeme / rdfs:label ?lexeme  .\n    ?s aamas:lexeme / aamas:gloss ?gloss  .\n")
         else:
             triple = str("    ?s " + lpref + ":" + propval[0] + " " + lpref + ":" + propval[1] + " .\n")
         triples = triples + triple
@@ -105,11 +163,25 @@ def sourcequery(pvlist,svalstring,lang):
     triple = str("    ?s aamas:memberOf / rdfs:comment  ?note .\n" )
     triples = triples + triple
     triples = str(triples + "}\n")
+    order = str("ORDER BY " + selection)
 
-    query = str(prefixes + select + triples )
+    query = str(prefixes + select + triples + order)
 
     return query
-
+ 
+def pinfoquery(pinfo,lang):
+    prefixes = str(prefixbase + "\n")
+    selection = str("?" + pinfo.replace(","," ?"))
+    select = str("SELECT DISTINCT " + selection + "\nWHERE\n{")
+    Lang = lang.capitalize()
+    triples = ''
+    pvlist = pinfo.split(",")
+    for pv in pvlist:
+        triple = str("    OPTIONAL { aama:" + Lang + " aamas:" + pv + " ?" + pv + " . }\n")
+        triples = triples + triple
+    triples = str(triples + "}\n")
+    query = str(prefixes + select + triples + "\n")
+    return query
 
 def formsquery(languages,qstring):
     # To ask whether specific forms exist in one or more langs,
@@ -130,7 +202,7 @@ def formsquery(languages,qstring):
     prefixes = prefixbase
     llist = languages.split(",")            
     for lang in llist:
-        print(str('lang = ' + lang))
+        #print(str('lang = ' + lang))
         # Get lpref
         lpref = lname2labb[lang]
         # Update prefixes
