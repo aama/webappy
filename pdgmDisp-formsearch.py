@@ -8,6 +8,9 @@ NOTE: In this one-frame version of pdgmDispUI, paradigm and res
 [=SPARQL query formed in pdgmDisp.query()] are inserted into the Tk text
  widgets lpdgm and lquery.
 
+[e.g. "pos=Pronoun,person=Person2,gender=Fem,number=?number"]
+
+[NOTE: 09/22/25 - Not sure what this script, dated 07/27/23, does - probably superceeded by subsequent sctipts.]
 '''
 
 from tkinter import *
@@ -33,8 +36,8 @@ f = ('times',16) #'the pleasing font'; used in llabel1, pdglabl
 def showLangs(*args):
     idxs = lbox.curselection()
     idxslist = list(idxs)
-    print('llist: ')
-    print(idxslist)
+    #print('llist: ')
+    #print(idxslist)
     lnameslist = []
     for i in idxslist:
         idx = int(i)
@@ -42,7 +45,7 @@ def showLangs(*args):
         #lmsg1.set("Paradigms for %s" % lname)
         lnameslist.append(lname) 
     languages= (',').join(lnameslist)
-    print(languages)
+    #print(languages)
     llmsg.set(languages)
 
 def choosePdgms(*args):
@@ -52,15 +55,15 @@ def choosePdgms(*args):
     #resultlist = resultstr.split(',')
     #print('resultlist: ')
     #print(resultlist)
-    print('lformslist: ')
-    print(idxslist)
+    #print('lformslist: ')
+    #print(idxslist)
     pnameslist = []
     for i in idxslist:
         idx = int(i)
-        print(str('idx = ' + str(idx)))
+        #print(str('idx = ' + str(idx)))
         form = resultlist[idx]
         pname = form[-1].strip('()')
-        print(str('pname: ' + str(pname)))
+        #print(str('pname: ' + str(pname)))
         pnameslist.append(pname)
     pnames = (',').join(pnameslist)
     print(str('pnames: ' + pnames))
@@ -69,7 +72,7 @@ def choosePdgms(*args):
     pdgmmsg.set(pnames)
 
 def pvpairsSearch(*args):
-    print('===============================\n')
+    print('\n===============================\n===============================')
     lforms.insert('end', '\n===============================\n')
     # From lang select-list
     languages = llmsg.get()
@@ -142,29 +145,29 @@ def pvpairsSearch(*args):
 
 def displayPdgms(*args):
     pdgmids = pdgmmsg.get()
-    print("pdgmids:")
-    print(pdgmids)
+    #print("pdgmids:")
+    #print(pdgmids)
     plabellist = pdgmids.split(',')
-    print('\nFor each of the  paradigms:')
+    ##print('\nFor each of the  paradigms:')
     for i in plabellist:
         #Presumption is  that first item in each plabel is '[labbrev]
         # Have to get lname from labbrev
 
-        print(i)
+        #print(i)
         pname = (i).split('-')
         labbrev = pname[0]
         lang = labb2lname[labbrev]
-        print(str('lang = ' + lang))
+        #print(str('lang = ' + lang))
         pdgmlist = []
         pdgmstr = ""
         sfile = str('pvlists/' + lang + '-labldb')
-        print(str('sfile: ' + sfile))
+        #print(str('sfile: ' + sfile))
         # get pvalue from pkey in (unshelved) pdgmdb
         labldb = shelve.open(sfile) # open it
         pvalue = labldb[i] # get the full prop-val string
         labldb.close()  # close it right away
-        print("pvalue:")
-        print(pvalue)
+        #print("pvalue:")
+        #print(pvalue)
         if "%" in pvalue:
             propsel = pvalue.split("%")
             pvalue = propsel[0]
@@ -236,10 +239,10 @@ def displayPdgms(*args):
         # Would have to make pdgmsDisp a dict
         disppdgms = (str(pdgmsDisp.get()) + plabel)
         pdgmsDisp.set(disppdgms)
-        print('pcount:')
-        print(pcount)    
-        print('pdgmDispDict:')
-        print(str(pdgmDispDict))
+        #print('pcount:')
+        #print(pcount)    
+        #print('pdgmDispDict:')
+        #print(str(pdgmDispDict))
         #for h in header:
            # select2.append(h.upper())
 
@@ -261,35 +264,35 @@ def pdgmCombine(*args):
 
     # Make a dictionary out of pdgmsDisp
     disppdgms = pdgmsDisp.get()
-    print("disppdgms:")
-    print(str(disppdgms))
-    disppdgms2 = disppdgms.rstrip('\n')
-    print('Paradigms displayed so far:')
+    #print("disppdgms:")
     #print(str(disppdgms))
-    print(disppdgms2)
+    disppdgms2 = disppdgms.rstrip('\n')
+    #print('Paradigms displayed so far:')
+    #print(str(disppdgms))
+    #print(disppdgms2)
     disppdgmslist = disppdgms2.split('\n')
     dictpdgms = {}
     for dp in disppdgmslist:
-        print("dp:")
-        print(dp)
+        #print("dp:")
+        #print(dp)
         sdp = dp.split(',')
-        print("sdp:")
-        print(sdp)
+        #print("sdp:")
+        #print(sdp)
         pid = sdp[0].split(':')
         #print(sdp)
-        print("pnum:")
-        print(pid[0])
-        print(sdp[0])
-        print(sdp[1:])
+        #print("pnum:")
+        #print(pid[0])
+        #print(sdp[0])
+        #print(sdp[1:])
         dictpdgms[pid[0]] = sdp[1:]
 
     # See which pdgms you want and what is the pivot
     pdgmsget = pdgms.get()
-    print("pdgmsget:")
-    print(pdgmsget)
+    #print("pdgmsget:")
+    #print(pdgmsget)
     pdgmsinfo = pdgmsget.split(':')
     #print(str('Pdgm Combine Info: ' + pdgmsget))
-    print(str('\nParadigms to combine: ' + pdgmsinfo[0]))
+    #print(str('\nParadigms to combine: ' + pdgmsinfo[0]))
     #print(pdgmsinfo[1])
     pivot = pdgmsinfo[1]
     print(str('Pivot(s) for combined pdgms: ' + pivot))
@@ -302,8 +305,8 @@ def pdgmCombine(*args):
     for i in pdgmnums:
         # Get its full specification
         pnamelist = dictpdgms[i]
-        print("pname: ")
-        print(pnamelist)
+        #print("pname: ")
+        #print(pnamelist)
 
 
         # Get rid oF 'num:LN,'
@@ -312,8 +315,8 @@ def pdgmCombine(*args):
         lname = pnamelist[0]
         lang = lname.removeprefix('language:')
         pvlist = pnamelist
-        print(str("property-value list formed from pdgm " + i + ":"))
-        print(pvlist)
+        #print(str("property-value list formed from pdgm " + i + ":"))
+        #print(pvlist)
         #Assuming for nnow number,person,gender values only!
         valstring = "number,person,gender,token"
         vallist = valstring.split(',') # = pandas row
@@ -358,13 +361,13 @@ def pdgmCombine(*args):
             pdgmlist.append(pdgmrow)
             #print(header3)
             #print(select)
-    print("\npdgmlist:")
-    print(str(pdgmlist))
+    #print("\npdgmlist:")
+    #print(str(pdgmlist))
     # kludge to get desired category (number & gender) order in pivot table
     #pdgmstr2 = pdgmstr.replace("Singular", " Singular")
     #pdgmstr2 = pdgmstr2.replace("Masc", " Masc")
     pdgmtab = tabulate(pdgmlist, headers=select)
-    print(str("\nselect string: " + header3))
+    #print(str("\nselect string: " + header3))
     #print('\n')
 
     print("\nThe csv ('comma-separated-value') output of the SPARQL query:")
@@ -373,8 +376,8 @@ def pdgmCombine(*args):
     print(pdgmtab)
     pdgmstr2 = str(header3 + '\n' + pdgmstr)
     # Make sure that vallist and pivlist do not overlap
-    print(str("vallist1: " + str(vallist)))
-    print(str("pivlist1: " + str(pivlist)))
+    #print(str("vallist1: " + str(vallist)))
+    #print(str("pivlist1: " + str(pivlist)))
     for i in vallist:
         if i in pivlist:
             vallist.remove(i)
@@ -416,7 +419,7 @@ def pdgmCombine(*args):
 
     #Finally, for missing data replace 'nan'(<'NaN') by '___'
     formattedStr = str(formatted_pdgmpd)
-    print(formattedStr)
+    #print(formattedStr)
     p3string = formattedStr.replace('nan', '___')
     print(p3string)
 
