@@ -1,7 +1,12 @@
 '''
-Program to generate pdgm names given input propsequence list.
-Should should generate list(s) of pdgmDisp-newlists and display
+Program to generate pdgm name list given a input propsequence list
+diferent from that contained in the language's current json file 
+'pdgmPropOrder' list. It displays the list in th frame to the 
+right.
+
+Will generate new list(s) of paradigm names  and display
 in frame to right.
+
 
 Basic framework for formsearch  using tkinter.
 Comma-separted strings of property values in listbox are keys to full 
@@ -51,7 +56,7 @@ def showLang(*args):
         #pdvals = lfile.read()
         mfile = open(mfilename, "r")
         mvals = mfile.read()
-        #Following if want to have separate prop-order entry
+         #Following if want to have separate prop-order entry
         # mvals3t = mvals.partition('Paradigm_Property_Order:')
         # mvar.set(mvals3t[0]])
         # ovar = mvals3t[2]
