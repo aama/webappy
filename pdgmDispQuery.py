@@ -1,6 +1,6 @@
 #!/usr/local/bin/python3
 '''
-query() assembles sparql pdgmquery from pvstring. In order:
+pdgmDuspQuery() assembles sparql pdgmquery from pvstring. In order:
 Prefixes, Select statement, Prop-val triples, Selection triples,
 Order-by 
 sourcequery() retrieves single-value targets, for the moment,
