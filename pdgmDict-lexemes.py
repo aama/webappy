@@ -1,13 +1,15 @@
 #!/usr/local/bin/python3
 '''
-Draws up the morphological property-values sdhemata used in the
-current inventory of termclusters. It cretes two files:
-1) 'pdgm-schemata-LANG.json': a full-formatted 'schemata'
-   and 'pdgmPropOrder' which can be inserted in the 'pdgms-LANG.json'
-   file;
-2) 'pdgm-PVN-LANG.txt': with the same information, but formatted
-   for insertion in various pdgm and pname displays
-no. 3
+IN PROGRESS:
+
+Creates the template of a 'lexemes' dictionary which supplies for every 
+'lexemeID' (usuaoally rendered in a conventional lower-ascii 
+representation approximating the real transcription) identified in one 
+or more paradigms ('termclusters') relevant lexical information such 
+as 'pos', 'lemma' (in the appropriate transcription ), 'gloss', 'inflectional
+class  . . . etc. Obviously, at least in the present state of available 
+digital resources, this lexical information must be entered manually.  
+
 '''
 
 import json
@@ -61,9 +63,9 @@ for lang in languagenames:
      for lex in lexSorted:
          lexDict2[lex] = lexSection[lex]
      print("lexemes:")
-     #print(lexSection)
+     print(lexSection)
      print("lexdict2")
-     #print(lexDict2)
+     print(lexDict2)
      # lexicalMaterial = lexDict | lexSection
 
      # Keep separate files of lex template (lex1) and current 'lexemes'
