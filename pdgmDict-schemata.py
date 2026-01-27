@@ -2,20 +2,23 @@
 '''
 Draws up the morphological property-values sdhemata used in the
 current inventory of termclusters. It cretes three files:
-1) 'pdgm-schemata-LANG.json': a full-formatted 'schemata'
+1) 'LANG-pdgm-schemata.json': a full-formatted 'schemata'
    and 'pdgmPropOrder' which can be inserted in the 'pdgms-LANG.json'
    file;
 2) a LANG-pdgms-newschemata.json file with the new schemata substitute
    for the old. (If content is correctly formatted, this file will
    replace the old LANG-pdgms.json file.
-3) 'pdgm-PVN-LANG.txt': with the schemata information information, 
+3) 'LANG-pdgm-PVN.txt': with the schemata information information, 
    but formatted for insertion in various pdgm and pname displays.
+4) 'LANG-v2p.dict': inverse of 'property: v1,v2,...' which is the base of 
+   schemata section and given in compact from in 
 '''
 
 import json
 import re
 from shutil import copy
 import sys
+import shelve
 
 
 #def pdgmidx(lang)
@@ -38,13 +41,22 @@ for lang in languagenames:
      print(str('\nLANG: ' + lang))
      lfile = str('../aama-data/data/' + lang + '/' + lang + '-pdgms.json')
      jdata = json.load(open(lfile))
-     # The file which contains the new schema
+     # The file which contains the property:value schemata (i.e., dict):
+     #     { ...  property: [value-list], ...}
      outfile1 = str('pvlists/' + lang + '-schemata.json')
+     # Inverse of outfile1: { ... value: [property]\
+     outfile2 = str('pvlists/' + lang + '-v2p.dict')
      # A summarizing file for display in pdgm display app
-     outfile2 = str('pvlists/' + lang + '-pdgm-PVN.txt')
+     outfile3 = str('pvlists/' + lang + '-pdgm-PVN.txt')
+     # A shelve file with contents of LANG-v2p.dict
+     vpdbfile = str('pvlists/' + lang + '-vpdb')
+     shelffile = shelve.open(vpdbfile)
+
+     # 1. GO THRU (NEW OR ALTERED) L-FILE,
+     #    MAKE NEW SCHEMATA {... property: [valuelist] ... ],
+     #    PLACE IT INTO L-FILE OR SUBSTITUTE IT INTO L-FILE FOR OLD ONE
 
      # The original lfile with new schemta section
-
      tccount = len(jdata['termclusters'])
      print(str('tccount:' + str(tccount)))
      # First, to get 'common' prop/val paiirs, 'harvest' pairs from 'common'
@@ -131,12 +143,45 @@ for lang in languagenames:
      #json.dump(jdata, fp=open(outfile3, 'w'), indent=2)     
 
      print(str('new ' + lang + ' schemata text: ' + outfile1))
-     # print(pvdsorted)
+     print(str('pvdsorted:/n' + str(pvdsorted)))
      
      # Write 'schemata' to json file
      json.dump(pvdsorted, fp=open(outfile1, 'w'), ensure_ascii=False, indent=2) 
+     # 2. INVERT SCHEMATA TO MAKE VALUE-TO-PROPERTY DICT FOR CONVERSION
+     #    OF VALUE LISTS INTO PROPERTY:VALUE LISTS     
      
-     # This subroutine yields a summarizing file pdgm-PVN-LANG.txt'
+     print('\nINVERTED SCHEMATA:\n')
+     # Following code is adapted from AI-generated 'summary' in answer to
+     # Google query: 'python how to invert a dictionary of lists'
+     # original_dict: dictPropVal
+     dictValProp = {}
+
+     for prop, vals in pvdsorted.items():
+          for val in vals:
+               print(str())
+               if val not in dictValProp:
+                    dictValProp[val] = ""
+               dictValProp[val]= prop
+               shelffile[val] = prop
+               print(str('val: ' + val + ', prop: ' + prop))
+     shelffile.close()
+     
+     # Now sort by value
+     # Following code is adapted from AI-generated 'summary' in answer to
+     # Google query: 'python how to sort a dictionary by key'
+     sorted_dictValProp = {k: dictValProp[k] for k in sorted(dictValProp)}
+     sorted_dictValProp
+
+     file = open(outfile2, "w")
+     file.write(str(sorted_dictValProp))
+     file.close
+     print('Value-Property Dictionary:')
+     print(sorted_dictValProp)
+ 
+     
+     # 3. MAKE SUMMARIZING FILE, LANG-pdgm-PVN.txt, FOR INCLUSION
+     #    IN PDGM DISPLAY APPLICATION WINDOWS
+    
      # Given here as part of schemata since it uses both 
      # the pvdsorted str and cpropset.
      # Other possibility would be to put this in a separate file
@@ -157,7 +202,7 @@ for lang in languagenames:
      cpropstr = str(str(tccount) + '\ PDGMS:\ COMMON\ PROPS:\n ' + cpropstr)
      porderstr = str('\nPARADIGM-NAME\ PROP-ORDER:\n ' + pdgmPropStr)
      pvdsorted2 = str(str(pvdf1) + '\n------------------\n' + cpropstr + porderstr)
-     file = open(outfile2, "w")
+     file = open(outfile3, "w")
      file.write(str(pvdsorted2))
      file.close
      print('Schemata summary:')
@@ -165,7 +210,7 @@ for lang in languagenames:
      
      # Replace 'schemata' section in current updated lang file
      
-     # First re-open the newly made schemata file
+     # First re-open the newl]y made schemata file
      with open(outfile1) as f:
           ftext1 = f.read()
 
