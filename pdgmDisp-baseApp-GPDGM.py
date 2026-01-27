@@ -1,6 +1,15 @@
+#!/usr/local/bin/python3
 
 '''
-Basic display of reference paradigms using tkinter.
+Basic display of 'generalized paradigms' (GPDGM) using tkinter.
+On the distinction PDGM ~ GPDGM cf. application intrductiono. But
+briefly, by PDGM we mean  the
+traditional (Varronic) morphological paradigm set (e.g. the 'Paradigm 
+Appendix' of traditional grammars), which consists of, say, for the verb, a
+systematic and exhaustive presentation of the possible combinations of 
+inflection class, polarity, tense, mood, etc. giving for each possible 
+category combination the 'Person-Number-(Gender)' forms of the 
+paradigmatic lexical item.
 Comma-separted strings of property values in listbox are keys to full 
 pdgm-defining prop:val strings (pvstrings/pdgm-dict-LANG.py). SPARQL query
 for pdgm  derived from that in pdgmDisp.query. Widgets and grid modeled 
@@ -8,6 +17,18 @@ on Mark Roseman, Modern Tkinter -- cf. esp. pp. 67-70.
 NOTE: In this one-frame version of pdgmDispUI, paradigm and res
 [=SPARQL query formed in pdgmDisp.query()] are inserted into the Tk text
  widgets lpdgm and lquery.
+
+Present [08/27/25] variants are:
+pdgmDispui-baseApp.py -- basic display of pdgms and combination in
+     pivot tables
+(pdgmDispui-baseApp2.py -- experimenting with pivot tables)
+pdgmDispui-baseApp3.py -- given set of property-value pairs, what form
+     do these have for values of another set of properties. E.g. forms
+     for different values of 'tam' in 3sgM verb formms in different
+     conjugation classes
+pdgmDispui-baseApp4.py -- same as above, but with possibility of 
+     restrictting  values of properties to subset (to get manageable
+     table).
 
 '''
 
@@ -19,7 +40,7 @@ import pandas as pd
 from pandas import Series, DataFrame
 from io import StringIO
 from IPython.display import display
-from pdgmDispQuery import query, sourcequery
+from pdgmDispQuery import query, sourcequery, pinfoquery
 #import for pdgm-display querimport pdgmDispQuery    
 #import for pdgm-display query code
 import shelve
@@ -79,34 +100,161 @@ def choosePdgm(*args):
         #pnameSel = pdgmdb[pname]
         # pmsg.set("PDGM: %s (# %s)" % (pname, idx))
         pmsg.set(pname)
-        # print(pmsg)
+        print(str("pmsg: " + pmsg))
 
 #function for the pdgm-display button
-def displayPdgm(*args):
+def displayPInfo(*args):
     idxs = pbox.curselection()
     if len(idxs)==1:
         idx = int(idxs[0])
         lbox.see(idx)
-        pname = pbox.get(idx)
+        pinfo = pbox.get(idx)
         #[01/21/22] For the moment, too hard to display pname w. %.
         #Would need to be able to invoke pdgmdb at this stage,
         #something like:
         #pnameSel = pdgmdb[pname]
         # pmsg.set("PDGM: %s (# %s)" % (pname, idx))
-        pmsg.set(pname)
+        pmsg.set(pinfo)
         print("\/\/\/\/\/\/")
-        print(str('\/\/\/\/\/\/ pname: ' + str(pname) + ' \/\/\/\/\/\/'))
+        print(str('\/\/\/\/\/\/ pinfo: ' + str(pinfo) + ' \/\/\/\/\/\/'))
         print("\/\/\/\/\/\/")
-    pdisp.set('paradigm .... ')
+    pdisp.set('paradigmInfo .... ')
     pvals = pmsg.get()  #get key that user selected
+    print(str("pvals: " + pvals))
     l = str(lmsg.get())
+    print(str("lmsg: " + l))
     # Cf. overlap of guipdgm(), ll.89-160 w. pdgmCombine() 250-310
     # Combine into one function?
+    print(str("\nPINFO DOMAIN':\n    " + pvals))
+
+    if pvals == 'Language':
+        displayLInfo()
+    elif pvals == 'Source':
+        displaySInfo()
+    elif pvals == 'Transcription':
+        displayTInfo()
+    else:
+        displayPDGM()
+
+def displayLInfo(*args):
+    # Set up for queries
+    sparql = SPARQLWrapper("http://localhost:3030/aama/query")
+    l = str(lmsg.get())
+    Lang = l.capitalize()
+    linfo = (str("Language Information for " + Lang + ":\n"))
+    print(linfo)
+    pinfo = "subfamily,geodemoURL,geodemoTxt"
+    res = pinfoquery(pinfo,l)
+    print(res)
+    sparql.setQuery(res)
+    sparql.setReturnFormat(JSON)
+    result = sparql.query().convert() # JSON converted output
+    #print("result:")
+    #print(result)
+    select = result["head"]["vars"]
+    print("select:")
+    print(select)
+    print("\n")
+    results = result["results"]["bindings"]
+    #print("results:")
+    #print(results)
+    #print("\n\n")
+    for result in results:
+        valuerow = []
+        for sel in select:
+            if sel in result:
+                selval = result[sel]["value"]
+                selValue = str(sel + ": " + selval)
+                print(selValue)
+                linfo = str(linfo + selValue + "\n")
+                #valuerow.append(selval)
+                #print(str("valuerow: " + str(valuerow) + "\n"))
+    print(str("linfo:\n" + linfo + "\n"))
+    lpdgm.insert('end', linfo)
+    lpdgm.insert('end', "\n")
+
+
+def displaySInfo(*args):    
+    sparql = SPARQLWrapper("http://localhost:3030/aama/query")
+    l = str(lmsg.get())
+    Lang = l.capitalize()
+    sinfo = (str("Source Information for " + Lang + ":\n"))
+    print(sinfo)
+    pinfo = "dataSource,dataSourceNotes"
+    res = pinfoquery(pinfo,l)
+    print(res)
+    sparql.setQuery(res)
+    sparql.setReturnFormat(JSON)
+    result = sparql.query().convert() # JSON converted output
+    #print("result:")
+    #print(result)
+    select = result["head"]["vars"]
+    print("select:")
+    print(select)
+    print("\n")
+    results = result["results"]["bindings"]
+    #print("results:")
+    #print(results)
+    #print("\n\n")
+    for result in results:
+        valuerow = []
+        for sel in select:
+            if sel in result:
+                selval = result[sel]["value"]
+                selValue = str(sel + ": " + selval)
+                print(selValue)
+                sinfo = str(sinfo + selValue + "\n")
+                valuerow.append(selval)
+                #print(str("valuerow: " + str(valuerow) + "\n"))
+    print(str("sinfo:\n" + sinfo + "\n"))
+    lpdgm.insert('end', sinfo)
+    lpdgm.insert('end', "\n")
+
+
+def displayTInfo(*args):    
+    sparql = SPARQLWrapper("http://localhost:3030/aama/query")
+    l = str(lmsg.get())
+    Lang = l.capitalize()
+    tinfo = (str("Transcription Information for " + Lang + ":\n"))
+    print(tinfo)
+    pinfo = "Consonants,Vowels,Prosody"
+    res = pinfoquery(pinfo,l)
+    print(res)
+    sparql.setQuery(res)
+    sparql.setReturnFormat(JSON)
+    result = sparql.query().convert() # JSON converted output
+    #print("result:")
+    #print(result)
+    select = result["head"]["vars"]
+    print("select:")
+    print(select)
+    print("\n")
+    results = result["results"]["bindings"]
+    #print("results:")
+    #print(results)
+    #print("\n\n")
+    for result in results:
+        valuerow = []
+        for sel in select:
+            if sel in result:
+                selval = result[sel]["value"]
+                selValue = str(sel + ": " + selval)
+                print(selValue)
+                tinfo = str(tinfo + selValue + "\n")
+                valuerow.append(selval)
+                #print(str("valuerow: " + str(valuerow) + "\n"))
+    print(str("tinfo:\n" + tinfo + "\n"))
+    lpdgm.insert('end', tinfo)
+    lpdgm.insert('end', "\n")
+
+def displayPDGM(*args):   
+    pvals = pmsg.get()  #get key that user selected
+    print(str("pvals: " + pvals))
+    l = str(lmsg.get())
+    print(str("lmsg: " + l))
     sfile = str('pvlists/' + l + '-pdgmdb')
-    print(str("\nPARADIGM 'NAME':\n    " + pvals))
-    #print(pvals)
-    #print("sfile = ")
-    #print(sfile)
+    print("sfile = ")
+    print(sfile)
     # get pvalue from pkey in (unshelved) pdgmdb
     pdgmdb = shelve.open(sfile) # open it
     ppropval = pdgmdb[pvals] # get the full prop-val string
@@ -139,9 +287,9 @@ def displayPdgm(*args):
     sparql = SPARQLWrapper("http://localhost:3030/aama/query")
 
     # 1.) Get SPARQL query for source
-    svalstring = "note"
+    svalstring = "note,lexeme,gloss"
 
-    print("1. SPARQL QUERY for 'note':")
+    print("1. SPARQL QUERY for 'note,lexeme,gloss':")
     print(str("   Query Output Property: " + svalstring))
 
     sres = sourcequery(pvlist,svalstring,l)
@@ -153,10 +301,12 @@ def displayPdgm(*args):
     #print('sresult: ' + str(sresult))
     sresult2 = sparql.query() # raw outpuut
     sresults = sresult['results']['bindings']
-    #print('sresults: ' + str(sresults))
-    sr = sresults[0]
+    print('sresults: ' + str(sresults))
+
     #print('sr: ' + str(sr))
-    note = sr['note']['value']
+    note = sresults[0]['note']['value']
+    lexeme = sresults[0]['lexeme']['value']
+    gloss = sresults[0]['gloss']['value']
     
     # Note always has a 'source' reference
     # if 'note' contains '::', part after '::' is 'comment'
@@ -180,11 +330,15 @@ def displayPdgm(*args):
     print(str('    source: ' + source))
     print(str('    comment: ' + comment))
     print(str('    template: ' + template))
+    print(str('    lexeme: ' + lexeme + ' gloss: ' + gloss))
     
     # 2.) Get SPARQL query for full pdgm  out of full prop-val
     # pdgm specification in pval
     print("\n2. SPARQL QUERY for paradigm:")
-    print(str("   Query Output Properties: " + valstring))
+    print("pvlist: ")
+    print(pvlist)
+    print("valstring: ")
+    print(valstring)
     res = query(pvlist,valstring,l)
     print(res)
     # else:
@@ -261,15 +415,14 @@ def displayPdgm(*args):
     # Would have to make pdgmsDisp a dict
     disppdgms = (str(pdgmsDisp.get()) + plabel)
     pdgmsDisp.set(disppdgms)
-    print('pcount:')
-    print(pcount)    
-    print('pdgmDispDict:')
-    print(str(pdgmDispDict))
+    #print('pcount:')
+    #print(pcount)    
+    #print('pdgmDispDict:')
+    #print(str(pdgmDispDict))
     for h in header:
         select2.append(h.upper())
 
-    # This gives the simple CSV
-    print("FROM WHICH . . .")
+    # This gives the simple CSprint("FROM WHICH . . .")
     print("\nCSV query output (from string-formatted output):\n")
     print(paradigm)
     #print("as list of lists:")
@@ -289,6 +442,10 @@ def displayPdgm(*args):
         plabel = str(plabel + "Comment: " + comment + "\n")
     if template:
         plabel = str(plabel + "Template: " + template + "\n")
+    if lexeme:
+        plabel = str(plabel + "Lexeme:'" + lexeme + "', ")
+    if gloss:
+        plabel = str(plabel + "Gloss:'" + gloss + "'\n")
     plabel += "\n"
     # Write the pdgm(s) to the lpdgm text widget
     lpdgm.insert('end', plabel)
@@ -310,182 +467,140 @@ def displayPdgm(*args):
     #lquery.insert('end', res)
     #lquery.insert('end', "\n")
 
-# function for pdgm-combine button
-def pdgmCombine(*args):
+
+
+# function for pdgm- button
+def displayGPDGM(*args):
     print('===============================\n')
     lpdgm.insert('end', '\n\n===============================')
-    disppdgms = pdgmsDisp.get()
-    disppdgms2 = disppdgms.rstrip('\n')
-    print('Paradigms displayed so far:')
-    #print(str(disppdgms))
-    print(disppdgms2)
-    disppdgmslist = disppdgms2.split('\n')
-    dictpdgms = {}
-    for dp in disppdgmslist:
-        # print(dp)
-        sdp = dp.split(':')
-        #print(sdp)
-        #print(sdp[0])
-        #print(sdp[1])
-        dictpdgms[sdp[0]] = sdp[1]
-    pdgmsget = pdgms.get()
-    print("pdgmsget:")
-    print(pdgmsget)
-    pdgmsinfo = pdgmsget.split(':')
-    #print(str('Pdgm Combine Info: ' + pdgmsget))
-    print(str('\nParadigms to combine: ' + pdgmsinfo[0]))
-    #print(pdgmsinfo[1])
-    pivot = pdgmsinfo[1]
-    print(str('Pivot(s) for combined pdgms: ' + pivot))
-    #lpdgm.insert('end',(str('PIVOT(S): ' + pivot + '\n')))
+    vstring = str(forms_entry.get()) 
+    valstr = str(props_entry.get())
+    lang = str(lmsg.get())
+    sfile = str('pvlists/' + lang + '-vpdb')
+    v2pdb = shelve.open(sfile)
+    vlist = vstring.split(',')
+    print(str('vstring: ' + vstring))
+    print(str('vlist: ' + str(vlist)))
+    pvlist = []
+    for val in vlist:
+        print(str('val: ' + val))
+        prop = v2pdb[val]
+        print(str('prop: ' + prop))
+        pv = str(prop + ':' + val)
+        pvlist.append(pv)
+    v2pdb.close()
 
-    # Get list of pdgms to combine
-    pdgmnums = pdgmsinfo[0].split(',')
+    print(str("For Words with Property:Value Features\n: " + str(pvlist)))
+    print(str("Find the forms with properties:: " + valstr))
+    print(str("Language: " + lang))
+    # pdgmDisp.query makes SPARQL query out of full prop-val
+    # pdgm specification in pval
+    res = query(pvlist,valstr,lang)
+    print("The SPARQL query formed from the GPDGM list:")
+    print(res)
+    sparql = SPARQLWrapper("http://localhost:3030/aama/query")
+    sparql.setQuery(res)
+    sparql.setReturnFormat(JSON)
+    results = sparql.query().convert()
+    results2 = sparql.query()
+    #print("results")
+    #print(results)
+    #print('results2')
+    #print(results2)
+    select = results["head"]["vars"]
+    print(str("select: " + str(select) + "\n"))
+    #header =  ("    ").join(select).upper()
+    header3 =  (",").join(select)
     pdgmlist = []
     pdgmstr = ""
-    for i in pdgmnums:
-        # Get its full specification
-        pname = dictpdgms[i]
-        # pop the lang and make str of pname proper
-        pnamelist = pname.split(',')
-        lang = pnamelist.pop(0).lower()
-        pname = ','.join(pnamelist)
-        print(str('\n' + i + ': ' +lang + ' ' + pname))
-        # Lots of overlap ll 250-310 w. guidpgm() ll.89-160
-        # Combine into one funcion?
-        # get db file for lang and find prop-val version of pname
-        sfile = str('pvlists/' + lang + '-pdgmdb')
-        # get pvalue from pkey in (unshelved) pdgmdb
-        pdgmdb = shelve.open(sfile) # open it
-        ### pname not the same as used to make pdgmdb
-        pvalue = pdgmdb[pname] # get the full prop-val string
-        pdgmdb.close()  # close it right away
-        pvlist = pvalue.split(",")
-        print(str("property-value list formed from pdgm " + i + ":"))
-        print(pvlist)
-        #pvalue = pvalue[0:-1]
-        # find sel str/list [= valstring/list]
-        if "%" in pvalue:
-            propsel = pvalue.split("%")
-            pvalue = propsel[0]
-            valstring = propsel[1]
-            valstring = valstring.replace("%","")
-        else:
-            valstring = "number,person,gender,token"
-        vallist = valstring.split(',') # = pandas row
-        vallist.remove('token')        # = pandas value
-        pivlist = pivot.split(',')     # = pandas col
-        # XXXXXX
-        valstring = str(pivot + ',' + valstring)
-        # XXXXXX
-        print(str('valstring: ' + valstring))
-        # pdgmDisp.query makes SPARQL query out of full prop-val
-        # pdgm specification in pval
-        res = query(pvlist,valstring,lang)
-        #print("The SPARQL query formed from the prop-val list:")
-        #print(res)
-        sparql = SPARQLWrapper("http://localhost:3030/aama/query")
-        sparql.setQuery(res)
-        sparql.setReturnFormat(JSON)
-        results = sparql.query().convert()
-        results2 = sparql.query()
-        #print("results")
-        #print(results)
-        #print('results2')
-        #print(results2)
-        select = results["head"]["vars"]
-        # print()
-        #header =  ("    ").join(select).upper()
-        header3 =  (",").join(select)
-        for result in results["results"]["bindings"]:
-            #print(result)
-            pdgmrow = []
-            for sel in select:
-                #print(sel)
-                if sel in result:
+    for result in results["results"]["bindings"]:
+        #print(result)
+        pdgmstr = ""
+        pdgmrow = []
+        for sel in select:
+            #print(sel)
+            if sel in result:
+                if sel == 'gloss':
+                    selval = str("'" + result[sel]["value"] + "'")
+                else:
                     #if result[sel]:
                     selval = result[sel]["value"]
-                else:
-                    selval = "--"
-                pdgmrow.append(selval)
-                #print(pdgmrow)
-            pdgmrowstr = (",").join(pdgmrow)
-            pdgmstr = str(pdgmstr + pdgmrowstr + "\n")
-            pdgmlist.append(pdgmrow)
-            #print(header3)
-            #print(select)
-    print("\npdgmlist:")
-    print(str(pdgmlist))
+            else:
+                selval = "--"
+            pdgmrow.append(selval)
+        print(pdgmrow)
+        pdgmrowstr = (",").join(pdgmrow)
+        pdgmstr = str(pdgmstr + pdgmrowstr + "\n")
+        pdgmlist.append(pdgmrow)
+        #print(header3)
+        #print(select)
     # kludge to get desired category (number & gender) order in pivot table
-    #pdgmstr2 = pdgmstr.replace("Singular", " Singular")
-    #pdgmstr2 = pdgmstr2.replace("Masc", " Masc")
+    pdgmstr2 = pdgmstr.replace("Singular", " Singular")
+    pdgmstr2 = pdgmstr2.replace("Masc", " Masc")
+    pdgmstr2 = str(header3 + '\n' + pdgmstr2)
+    #print("pdgmstr2:")
+    #print(pdgmstr2)
     pdgmtab = tabulate(pdgmlist, headers=select)
-    print(str("\nselect string: " + header3))
+    #print(str("\nselect string: " + header3))
     #print('\n')
 
-    print("\nThe csv ('comma-separated-value') output of the SPARQL query:")
-    print(str((',').join(select) + '\n' + pdgmstr + '\n'))
+    #print("\nThe csv ('comma-separated-value') output of the SPARQL que ry:")
+    #print(str((',').join(select) + '\n' + pdgmstr + '\n'))
     print("\nFormatted version of the csv list:")
     print(pdgmtab)
-    pdgmstr2 = str(header3 + '\n' + pdgmstr)
-    # Make sure that vallist and pivlist do not overlap
-    print(str("vallist1: " + str(vallist)))
-    print(str("pivlist1: " + str(pivlist)))
-    for i in vallist:
-        if i in pivlist:
-            vallist.remove(i)
-   
-    # Turn it into a pandas dataform
-    pdgmpd = pd.read_csv(StringIO(pdgmstr2))
-    print("\nPDGMS as pandas pd -- pdgmpd:")
+
+    # To make pivt tables
+    # First make a pandas DataFrame
+    #print("\npdgmlist:")
+    #print(str(pdgmlist))
+
+    vallist = valstr.split(',')
+    print("vallist:")
+    print(vallist)
+    #pdgmdf = pd.read_csv(StringIO(pdgmstr2))
+    pdgmpd = pd.DataFrame(data=pdgmlist, columns=select)
+    print("\npdgmpd")  
     print(pdgmpd)
 
-    # Then 'pivot' on designated properties with pandas pivot()
-    # For 'missing values' in pivot (with unstack):
-    # The missing value can be filled with a specific value with the 
-    # fill_value argument -- e.g. 'df3.unstack(fill_value=-1e9)'
-    # https://pandas.pydata.org/docs/user_guide/reshaping.html
+    pivstr = str(pivot_entry.get())
+    if pivstr:
+        pivotlist = pivstr.split(";") 
+        print(str("pivotlist: " + str(pivotlist)))
+        col = pivotlist[0].split(",")
+        print(str('columns: ' + str(col)))
+        ndx = pivotlist[1].split(",")
+        print(str('index: ' + str(ndx)))
+        val = pivotlist[2]
 
-    #pivlists = vallist + pivlist
-    print(str("vallist2: " + str(vallist)))
-    print(str("pivlist2: " + str(pivlist)))
+    try:
+        pdgmpdpiv = pdgmpd.pivot(columns=col,index=ndx,values=val)
+    except:
+        pdgmpdpiv = "[No pivot table for this data.]"
 
-    pdgmpiv1 = pdgmpd.pivot(index=vallist, columns=pivlist, values='token').reset_index()
-    pdgmpiv2 = pdgmpd.pivot(index=vallist, columns=pivlist, values='token')
-    pdgmpiv2.columns.name=None
+    #Alternate, more orthodox 'except'':
+    #except ValueError as e:
+    #    print(f"Error: {e}):
 
-    # Get things ordered
-    ppiv1 = pdgmpiv1.sort_values(by=['number','person','gender'], ascending=[False,True,False])
-    ppiv2 = pdgmpiv2.sort_values(by=['number','person','gender'], ascending=[False,True,False])
+        ## Now do left-align
+        ## by formatting
+        #print("\nMethod4: formatting")
+        #pdgmpd = pdgmpd.map(lambda x: f"{x:<12}")
+        # display apparently does not get imported
+        #print("pivot paradigm")
+        #print(pdgmpd)
+ 
+    ## Now insert form request and forms
+    lpdgm.insert('end',str('\nLanguage: ' + lang  + '\n'))
+    lpdgm.insert('end',str('For the term cluster:\n    ' + vstring  + '\n'))
+    lpdgm.insert('end',str('Posible values for:\n     ' + valstr + '\n\n'))
+    #lpdgm.insert('end','Table: \n')
+    #lpdgm.insert('end', pdgmpd )
+    #lpdgm.insert('end','\n\nPivot Table: \n')
+    lpdgm.insert('end', pdgmpdpiv)
+    lpdgm.insert('end', '\n\n===============================\n')
 
-    print("\nCombined: paradigm dataform pivoted on 'token' (with index):")
-    print(ppiv1)
-    print("\n w/o index:")
-    print(ppiv2)
 
-    ## Now do left-align
-    ## by formatting
-    print("\nMethod4: formatting")
-    formatted_pdgmpd = ppiv2.map(lambda x: f"{x:<12}")
-    # display apparently does not get imported
-    print(formatted_pdgmpd)
-
-    #Finally, for missing data replace 'nan'(<'NaN') by '___'
-    formattedStr = str(formatted_pdgmpd)
-    print(formattedStr)
-    p3string = formattedStr.replace('nan', '___')
-    print(p3string)
-
-    ## Now insert sequentially and pivoted pdgm combo into display space
-    lpdgm.insert('end',str('\nCOMBINE PARADIGMS: ' + pdgmsinfo[0]) + '\n')
-    lpdgm.insert("end","\nSEQUENTIALLY COMBINE\n")
-    lpdgm.insert('end',pdgmtab)
-    lpdgm.insert("end",str("\n\nPIVOT: " + pivot + "\n"))
-    #lpdgm.insert('end', formatted_pdgmpd)
-    lpdgm.insert('end', p3string)
-    #lpdgm.insert('end', pdgmpiv2)
-    lpdgm.insert('end', '\n\n===============================\n\n')
-
+# Where is queryApply used?
 def queryApply(res):
     sparql = SPARQLWrapper("http://localhost:3030/aama/query")
     sparql.setQuery(res)
@@ -500,6 +615,7 @@ def queryApply(res):
     print("select:")
     print(select)
     #header =  ("    ").join(select).upper()
+
     header3 =  (",").join(select)
     pdgmstr = ""
     pdgmlist = [select,]
@@ -522,7 +638,7 @@ def queryApply(res):
     print(pdgmlist)
     return pdgmlist
 
-'''
+
 def makePdgmDict(*args):
     # Make a dictionary of pdgms displayed so far
     # (Can this be made part of main app?)
@@ -541,7 +657,6 @@ def makePdgmDict(*args):
         #print(sdp[1])
         dictpdgms[sdp[0]] = sdp[1]
     return dictpdgms
-'''
 
 languagenames = ['aari', 'afar', 'alaaba', 'alagwa', 'akkadian-ob', 'arabic', 'arbore', 'awngi', 'bayso', 'beja-alm', 'beja-hud', 'beja-rei', 'beja-rop', 'beja-van', 'beja-wed', 'berber-ghadames', 'bilin', 'boni-jara', 'boni-kijee-bala', 'boni-kilii', 'burji-sas', 'burji-wed','burunge', 'coptic-sahidic', 'dahalo', 'dhaasanac', 'dizi', 'egyptian-middle', 'elmolo', 'gawwada', 'gedeo', 'geez', 'hadiyya', 'hausa', 'hdi', 'hebrew', 'iraqw', 'kambaata', 'kemant', 'khamtanga', 'koorete', 'maale', 'mubi', 'oromo', 'rendille', 'saho', 'shinassha', 'sidaama', 'somali', 'syriac', 'tsamakko', 'wolaytta', 'yaaku', 'yemsa']
 
@@ -555,7 +670,7 @@ languagenames = ['aari', 'afar', 'alaaba', 'alagwa', 'akkadian-ob', 'arabic', 'a
 # Would addition of scrollbar to lquery or lpdgm give more optioms?
 root = Tk()
 root.geometry('1200x1200')
-root.title('Paradigm Display - ltsource')
+root.title('Display - gPDGM')
 # Configure cols and rows
 # from UIa
 root.grid_columnconfigure(0, weight=1)
@@ -622,24 +737,38 @@ pbox.grid(column=0, row=10, rowspan=15, sticky=(N,S,E,W), pady=5, padx=5)
 
 #pcbutton = ttk.Button(cframe, text='Choose Paradigm', command=choosePdgm, default='active')
 #pcbutton.grid(column=0, row=25, sticky=W)
-pdbutton = ttk.Button(cframe, text="Display Paradigm", command=displayPdgm)
+pdbutton = ttk.Button(cframe, text="Display PDGM", command=displayPInfo)
 pdbutton.grid(column=0, row=25, sticky=W)
+
+pvButton = ttk.Button(cframe, text="Display GPDGM:", command=displayGPDGM)
+pvButton.grid(column=0, row=26, sticky=W)
 
 
 # Individual pdgm display space
-plabel1 = ttk.Label(cframe, text="Paradigms:", font=f)
+plabel1 = ttk.Label(cframe, text="Display:", font=f)
 plabel1.grid(column=1, row=0, sticky=(N,E))
 # pdgm content displayed here in text widget
-lpdgm = Text(cframe, state='normal', width=80, height=25, wrap='none')
+lpdgm = Text(cframe, state='normal', width=80, height=25, wrap='word')
 lpdgm.grid(column=2, row=0, rowspan=25, sticky=(N,S,E,W))
 
 # Combined pdgm display
-ttk.Label(cframe, text="Combine Paradigms:").grid(column=1, row=25, sticky=E)
-ttk.Label(cframe, text="Format: p1,p2,[...];pivot1,pivot2[...]").grid(column=2, row=25,sticky=W)
-pdgms = StringVar()
-pdgms_entry = ttk.Entry(cframe, width=25, textvariable=pdgms)
-pdgms_entry.grid(column=2, row=26, sticky=W)
-ttk.Button(cframe, text="Combine Paradigms", command=pdgmCombine).grid(column=2,row=26, sticky=E)
+ttk.Label(cframe, text="GPDGM Specs:").grid(column=1, row=25, sticky=E)
+
+ttk.Label(cframe, text="1.Common Vals: 'val1','val2',... ").grid(column=2, row=25,sticky=W)
+forms = StringVar()
+forms_entry = ttk.Entry(cframe, width=25, textvariable=forms)
+forms_entry.grid(column=2, row=26, sticky=W)
+
+ttk.Label(cframe, text="2.PDGM Props : prop1,prop2,...       ").grid(column=2, row=25,sticky=E)
+props = StringVar()
+props_entry = ttk.Entry(cframe, width=25, textvariable=props)
+props_entry.grid(column=2, row=26, sticky=E)
+
+ttk.Label(cframe, text="3.Output Form: colProps;ndxProp(s);valProp(s)").grid(column=2, row=27,sticky=W)
+pivot = StringVar()
+pivot_entry = ttk.Entry(cframe, width=25, textvariable=pivot)
+pivot_entry.grid(column=2, row=27, sticky=E)
+
 
 # ttk.Label(cframe, text="[Formats --  Combine: N,N,N...:Pivot,Pivot...; Template: templ-pdgm-no:data-pdgm-no]").grid(column=2, row=26, sticky=W)
 '''
@@ -689,3 +818,55 @@ showLfile()
 root.mainloop()
 
 
+#pos:Verb,conjClass:Prefix,clauseType:Main,lexeme:yiqiin,polarity:Affirmative,number:Singular,person:Person3,gender:Masc
+ 
+'''
+valstring:
+Afar
+pos:Verb,conjClass:Prefix,polarity:Affirmative,number:Singular,person:Person3,gender:Masc
+pos:Verb,polarity:Affirmative,number:Singular,person:Person3,gender:Masc
+conjClass:Prefix+Suffix,tam,token
+Somali
+pos:Verb,conjClass:Prefix,clauseType:Main,polarity:Affirmative,number:Singular,person:Person3,gender:Masc
+pos:Verb,conjClass:Prefix,clauseType:Main,lexeme:yiqiin,polarity:Affirmative,number:Singular,person:Person3,gender:Masc
+pos:Verb,conjClass:Suffix,clauseType:Main,polarity:Affirmative,number:Singular,person:Person3,gender:Masc
+	lexeme:joogso+kari+samee+sug,tam,token 
+TODO:conjSubClass,lexeme:joogso+kari+samee+sug,tam,token
+Verb,Suffix,Main,Affirmative,Singular,Person3,Masc	
+conjSubClass,lexeme:joogso+kari+samee+sug,tam,token
+conjSubClass,lexeme;tam;token
+Verb,Prefix,Main,Affirmative,Singular,Person3,Masc	
+lexeme:yidi+yiil+yimi+yiqiin,gloss,tam,token
+lexeme,gloss;tam;token
+Verb,Main,Affirmative,Singular,Person3,Masc
+conjClass,lexeme:yiil+yiqiin+joogso+sug,gloss,tam,to
+conjClass,lexeme,gloss;tam;token
+    # NOTE:
+    # The default pivot list assumes a tripartite select-list as 
+    # entered in the 'props_entry' and repeated in the 'select' list
+    # which is used in the SPARQL query.  .
+    # A more adequate version of the pivot list option will allow
+    # user-input of the ccolumn and index options of the pivot
+    # transformation.
+
+    #Hve to be able to allow more than one value in cols/index.
+    # Case in point: Somali Suffix verbw where index would be 'tam',
+    # but for some 'conjSubClass' a few tam are represented by more than 
+    # one lexeme, do that a 2-dimensional columns section is necessary.
+    # So: give Dataframe for all, then pivot table if possible, (gracefuL) 
+    # error# message otherwise.
+
+    # Try:  pos:Verb,conjClass:Suffix,clauseType:Main,polarity:Affirmative,number:Singular,person:Person3,gender:Masc
+    # conjSubClass,tam,token  VS. lexeme,tam,token
+
+ 
+    v2pDict = str('pvlists/' + lang + '-' + 'v2p.dict')
+    dictValProp = open(v2pDict)
+    vlist= vstring.split(',')
+    pvlist = []
+    for val in vlist:
+        prop = dictValProp[val]
+ 
+        pv = str(prop + ':' + val)
+        pvlist.append(pv)
+'''
