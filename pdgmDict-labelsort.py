@@ -26,6 +26,12 @@ I.e.:
      },_  => },^J[
      ],_[ => ],^J[
 
+[12/11/25] Q: Should paradigms be re-labeled and sorted after every
+              change of common values? How reconcile need for unique
+              identifier for each pdgm with need for systematic
+              order of padmgs in json file for editing purposes?
+              Find way to order independent of label?
+
 '''
 
 import json
@@ -80,11 +86,15 @@ plabels = ''
 tccount = len(pdgmdict['termclusters'])
 print(str('tccount: ' + str(tccount)))
 
-# New label string
+# 1. New label string
 
 # for each termcluster, make new label string out of the
 # values of its props in its 'common' section, taken in the
 # order of the props in 'refPdgmProops'
+
+# [12/11/25]: See if can insert here routine to systematically
+#             shorten label
+
 for i in range(tccount):
      # read-in 'common' section
      plabel1 = pdgmdict['termclusters'][i]['label']
@@ -116,7 +126,7 @@ for i in range(tccount):
      plabel3 = pdgmdict['termclusters'][i]['label']
      #print(str('plabel3: ' + plabel3))
 
-# Now sort termclusters by label     
+# 2/ Now sort termclusters by label     
 pdgms = pdgmdict['termclusters']
 #print('termclusters in:')
 #print(pdgms)
@@ -142,7 +152,7 @@ os.remove(outfile0)
 print("tctext")
 # print(tctext)
 
-# re-format 'termclusters'section
+# 3. re-format 'termclusters'section
 
 # json.dump formulates output with one json constituent per line.
 # However in our scheme the paradigm structure 'terms' is a 
