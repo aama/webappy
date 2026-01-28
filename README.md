@@ -17,11 +17,15 @@ language directories.
     1.1 `fuseki.sh`: 
 This is the script which launches the fuseki datastore. 
 The Ruby function which actually launches and runs the datastore is located in the 
-`~/jena` directory, and  uses as one of its arguments the 
-`aamaconfig.ttl`  configuration file. In addition to activating the 
+`FUSEKI_HOME` directory, and  uses as one of its arguments the 
+`aamaconfig.ttl` configuration file, which should be inserted into the 
+`{FUSEKI_HOME}/apache-jena-fuseki-N.N.N/` directory (e.g., currently on my machine,
+`~/jena/apache-jena-fuseki-3.16.0/`). In addition to activating the 
 datastore, this function opens a web page  on `localhost:3030` where 
 the datastore can be inspected, and where SPARQL queries can be 
-independently run against the datastore.
+independently run against the datastore. For dcumentation and installation 
+cf. [Apache Jena Fuseki](https://jena.apache.org/documentation/fuseki2/index.html)
+and further here in [github.aama.io](https://aama.github.io./)
 
     1.2 `aama-datastore-update.sh ../aama-data/data/[LANG]`:
  This script needs to be run whenever new or revised data are added 
@@ -64,9 +68,9 @@ and which determines the order of the properties whose values constitute
 the paradigm 'name'.
         
     2.3 `pdgmDict-lexemes.py [LANG]`: 
-This script assures that there is 
-at least  a dummy lexeme-section  entry (with `lemma = '[x]', gloss = '[y]'`)
-for every lexeme used in a paradigm.
+This script, working with pdgmDict-lexCheck.py and pdgmDict-lexRev 
+assures that there is at least  a dummy lexeme-section  entry 
+(with `lemma = '[x]', gloss = '[y]'`) for every lexeme used in a paradigm.
 
     2.4 `pdgmDict-json2ttl.py [LANG]`: 
 After all the foregoing
@@ -75,16 +79,39 @@ by section, the `[LANG]-pdgms.jspn` file into a '[LANG}-pdgms.ttl`, and
 includes some 'predicates' from the various RDF semantics applications.
 (It is derived from an xsl file originally written by Gregg Reynolds.) 
 
+    2.5 Assorted `pdgmDict-MANIPULATION.py` scripts:
+A number of scripts aimed principally at ordering, formatting, 
+or extracting information from the 'LANG-pdgms.json' files. 
+(See the introductory material in the individual script texts.)
+    - pdgmDict-jreplace.py
+    - pdgmDict-lablesort.py
+    - pdgmDict-lfam.py
+    - pdgmDict-lname2labb.py
+    - pdgmDict-propsets-indiv.py
+    - pdgmDict-propsets-merged.py
+    - pdgmDict-rorderPdgmCols.py
+    - pdgmDict-sourceBib.py
+    - pdgmDict-template.py
+
+
 ### 3. Python scripts to display and manipulate paradigm data.
 
-The two current data-display/manipulation (pdgmDispUI-) scripts are
+The basic paradigm display script is `pdgmDisp-baseApp-PDGM.py';
+a generalization of the notion paradigm underlies the related
+script `pdgmDisp-baseApp-GPDGM.py`. `pdgmDisp-formsearch.py` is
+designed to search all or large iparts of the datastore for features
+and combinations of features. 'pdgmDisp-pnames.py` focuses on returning
+simply paradigm labels. All the `pdgmDisp-. . .` scripts call on 
+`pdgmDispQuery.py'
+
+The three major data-display/manipulation (`pdgmDisp- . . .`) scripts are
 descended from an earlier more integrated browser application, which
 included both the display and formatting applications and was written
-in Clojure. We expect this version also to eviolve into such a more
+in Clojure. We expect the current version also to eviolve into such a more
 integraed browser-oriented from. 
 
-For the graphic user interface, this version uses widgets from the
-native Python tkinter adaption of the tk graphic interface. The
+For the moment, this version uses for the graphic user interface widgets 
+from the native Python tkinter adaption of the tk graphic interface. The
 widgets (cframe, StringVar, Label, Listbox, Text, Button, and Entry, 
 with asociated text, textvariable, and command) are placed on the
 display  with respect to a column/row grid. After the graphic set-up
@@ -92,7 +119,7 @@ commands, the bulk of the script consists of the functions called
 by the widget (princiipally Button) 'command' argument.
 
 
-    3.1 `pdgmDispUI-baseApp.py`: 
+    3.1 `pdgmDisp-baseApp-PDGM.py`: 
 The graphic setup is a two-colum
 display with, in the left column, a language select-list, where a language
 choice results in a middle box display of the property-value inventory
@@ -116,7 +143,12 @@ enter *3,5:tam*  in the text box, push the 'Combine Paradigms' button,
 and see (for the moment, first) a sequential display of the paradigms, and a
 display 'pivoted' on the value for 'tam'.
 
-    3.2 `pdgmDispUI-formsearch.py`: 
+    3.2 `pdgmDisp-baseApp-GPDGM.py`:
+As its name suggests, this script offers a generalization of the notion 
+"paradigm". In manty morphological systems (and grammatical traditions) 
+morphological paradigms
+
+    3.3 `pdgmDisp-formsearch.py`: 
 This script is for the comparison of
 realizations of a given property/value combination in different
 languages. Two or more languages can be selected from the upper-right
@@ -141,7 +173,7 @@ the full paradigm, sequentially numbered, in the lower right-hand text
 box. For moore precise comparison one could then go on to 'combine'
 the paradigms as in the baseApp script.
 
-    3.3 `pdgmDispQuery.py`: 
+    3.5 `pdgmDispQuery.py`: 
 Each of the display scripts, 3.1 and 3.2,
 finds the data it displays by a SPARQL query against the AAMA datastore.
 These queries are formed from the display data request by one of the
