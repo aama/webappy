@@ -68,30 +68,28 @@ and which determines the order of the properties whose values constitute
 the paradigm 'name'.
         
     2.3 `pdgmDict-lexemes.py [LANG]`: 
-This script, working with pdgmDict-lexCheck.py and pdgmDict-lexRev 
-assures that there is at least  a dummy lexeme-section  entry 
-(with `lemma = '[x]', gloss = '[y]'`) for every lexeme used in a paradigm.
+The lexemes associated with paradigms in the `LANG-pdgms.json` (and corresponding `LANG-pdgms.ttl`) files are identified by a `lexemeID` which could in principal be any arbitrary alphanumeric symbol sequence, but which in practice and for memnonic convenience are lower-ascii approximations of the lexeme's lemma. This script, in conjunction with `pdgmDict-lexCheck.py` and `pdgmDict-lexRev.py`, generates a `lexemes` section consisting of   dummy lexeme  entries (e.g., `lemma = '[x]', gloss = '[y]'`) for every lexemeID. This 'lexemes' section must be subsequently filled out by hand (or in an ideal case be linked programmatically with a digital lexicon of the language in question).
 
     2.4 `pdgmDict-json2ttl.py [LANG]`: 
-After all the foregoing
-file modifications, this script transforms, section
+After all the foregoing file modifications, this script transforms, section
 by section, the `[LANG]-pdgms.jspn` file into a '[LANG}-pdgms.ttl`, and 
 includes some 'predicates' from the various RDF semantics applications.
 (It is derived from an xsl file originally written by Gregg Reynolds.) 
 
     2.5 Assorted `pdgmDict-MANIPULATION.py` scripts:
-A number of scripts aimed principally at ordering, formatting, 
-or extracting information from the 'LANG-pdgms.json' files. 
-(See the introductory material in the individual script texts.)
-    - pdgmDict-jreplace.py
-    - pdgmDict-lablesort.py
-    - pdgmDict-lfam.py
-    - pdgmDict-lname2labb.py
-    - pdgmDict-propsets-indiv.py
-    - pdgmDict-propsets-merged.py
-    - pdgmDict-rorderPdgmCols.py
-    - pdgmDict-sourceBib.py
-    - pdgmDict-template.py
+There are in addition a number of scripts aimed at ordering, formatting, 
+or extracting information from the 'LANG-pdgms.json' files:
+    - `pdgmDict-jreplace.py`
+    - `pdgmDict-lablesort.py`
+    - `pdgmDict-lfam.py`
+    - `pdgmDict-lname2labb.py`
+    - `pdgmDict-propsets-indiv.py`
+    - `pdgmDict-propsets-merged.py`
+    - `pdgmDict-reorderPdgmCols.py`
+    - `pdgmDict-sourceBib.py`
+    - `pdgmDict-template.py`
+(For their functions, see the introductory material of the individual script texts.)
+
 
 
 ### 3. Python scripts to display and manipulate paradigm data.
@@ -116,7 +114,7 @@ widgets (cframe, StringVar, Label, Listbox, Text, Button, and Entry,
 with asociated text, textvariable, and command) are placed on the
 display  with respect to a column/row grid. After the graphic set-up
 commands, the bulk of the script consists of the functions called
-by the widget (princiipally Button) 'command' argument.
+by the widget (princiipally `Button`) 'command' argument.
 
 
     3.1 `pdgmDisp-baseApp-PDGM.py`: 
@@ -145,8 +143,8 @@ display 'pivoted' on the value for 'tam'.
 
     3.2 `pdgmDisp-baseApp-GPDGM.py`:
 As its name suggests, this script offers a generalization of the notion 
-"paradigm". In manty morphological systems (and grammatical traditions) 
-morphological paradigms
+"paradigm". In many grammatical traditions (cf. the familiar "APPENDIX: PARADIGMS" of the standard Indoeuropean and Afroasiatic grammars, but also, e.g. 2nd millennium
+B.C. Sumerian [OIP; Gragg]), this is a complete enumeration of the forms considered to model/exemplify a morphological system is given by an exhaustive set of tabular presentations each giving, e.g., forms representing the possible combinations of `number`, `person`, `gender` categories for one possible combination out of all the other relevant morphological catefories: `part-of-speech`, `tense`, `aspect`, 'mood', `case`, 'inflectional class`, etc.
 
     3.3 `pdgmDisp-formsearch.py`: 
 This script is for the comparison of
