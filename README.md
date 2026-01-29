@@ -80,27 +80,28 @@ includes some 'predicates' from the various RDF semantics applications.
 There are in addition a number of scripts aimed at ordering, formatting, 
 or extracting information from the 'LANG-pdgms.json' files:
     - `pdgmDict-jreplace.py`
+    
     - `pdgmDict-lablesort.py`
+    
     - `pdgmDict-lfam.py`
+    
     - `pdgmDict-lname2labb.py`
+    
     - `pdgmDict-propsets-indiv.py`
+    
     - `pdgmDict-propsets-merged.py`
+    
     - `pdgmDict-reorderPdgmCols.py`
+    
     - `pdgmDict-sourceBib.py`
+    
     - `pdgmDict-template.py`
+    
 (For their functions, see the introductory material of the individual script texts.)
 
 
 
 ### 3. Python scripts to display and manipulate paradigm data.
-
-The basic paradigm display script is `pdgmDisp-baseApp-PDGM.py';
-a generalization of the notion paradigm underlies the related
-script `pdgmDisp-baseApp-GPDGM.py`. `pdgmDisp-formsearch.py` is
-designed to search all or large iparts of the datastore for features
-and combinations of features. 'pdgmDisp-pnames.py` focuses on returning
-simply paradigm labels. All the `pdgmDisp-. . .` scripts call on 
-`pdgmDispQuery.py'
 
 The three major data-display/manipulation (`pdgmDisp- . . .`) scripts are
 descended from an earlier more integrated browser application, which
@@ -118,6 +119,7 @@ by the widget (princiipally `Button`) 'command' argument.
 
 
     3.1 `pdgmDisp-baseApp-PDGM.py`: 
+    
 The graphic setup is a two-colum
 display with, in the left column, a language select-list, where a language
 choice results in a middle box display of the property-value inventory
@@ -142,11 +144,21 @@ and see (for the moment, first) a sequential display of the paradigms, and a
 display 'pivoted' on the value for 'tam'.
 
     3.2 `pdgmDisp-baseApp-GPDGM.py`:
+    
 As its name suggests, this script offers a generalization of the notion 
-"paradigm". In many grammatical traditions (cf. the familiar "APPENDIX: PARADIGMS" of the standard Indoeuropean and Afroasiatic grammars, but also, e.g. 2nd millennium
-B.C. Sumerian [OIP; Gragg]), this is a complete enumeration of the forms considered to model/exemplify a morphological system is given by an exhaustive set of tabular presentations each giving, e.g., forms representing the possible combinations of `number`, `person`, `gender` categories for one possible combination out of all the other relevant morphological catefories: `part-of-speech`, `tense`, `aspect`, 'mood', `case`, 'inflectional class`, etc.
+"paradigm". In many grammatical traditions (cf. the familiar "APPENDIX: PARADIGMS" 
+of the standard Indoeuropean and Afroasiatic grammars, but also, e.g. 2nd millennium
+B.C. Sumerian [OIP; Gragg]), this is a complete enumeration of the forms considered to model/exemplify a morphological system. This is realized as an exhaustive set of tabular presentations each giving, e.g.:
 
+   1) for one possible combination out of all the relevant morphological catefories: `part-of-speech`, `tense`, `aspect`, 'mood', `case`, 'inflectional class`, etc. (= the `property: value' list given in the `common` portion of each `termcluster` in `LANG-pdgms.json' )
+    
+    2) the forms associated with the possible combinations of (e.g., for verbs) the `number`, `person`, `gender` properties ( = the 'terms' table [list of lists] of the lexemes characterized by the 'common' property set.
+
+In 'pdgmDisp-baseApp-GPDGM.py` we have this same structure of a set of 'common' property-value pairs and a "table" of 'terms', except that the `commmon` and `terms` except that the set of property-values associated with each is completely at the discretion of the investigator. Obviously the regular paradigms of the 'LANG-pdgms.json' files are a special case of GPDGM displays, as are a very large number of `common`-`term` combinations which do not correspond to any possible or occurring form. But by exploring occurring combinations of interest, including ones which involve distinct languages, this dislay routine opens up the possibility of many potentially interesting and relevant form tables.
+    
+  
     3.3 `pdgmDisp-formsearch.py`: 
+    
 This script is for the comparison of
 realizations of a given property/value combination in different
 languages. Two or more languages can be selected from the upper-right
@@ -171,11 +183,16 @@ the full paradigm, sequentially numbered, in the lower right-hand text
 box. For moore precise comparison one could then go on to 'combine'
 the paradigms as in the baseApp script.
 
+    3.4 `pdgmDisp-pnames.py`:
+
+This program simply enables the uiser to generate and display, presumably on an experimental basis, a "paradigm-name" list in a different order from that dictated by the `pdgmPropOrder` feature of the `LANG-pdgms.json` file.
+
     3.5 `pdgmDispQuery.py`: 
-Each of the display scripts, 3.1 and 3.2,
-finds the data it displays by a SPARQL query against the AAMA datastore.
-These queries are formed from the display data request by one of the
- `query()` functions contained in this script which has been imported
+    
+Each of the display scripts, 3.1, 3.2, and 3.3,
+finds the data it displays by running a SPARQL query against the AAMA datastore.
+These queries are formed from the display data request by one or more of the
+ `query()` functions contained in this script and which have been imported
 into the display script. The query itself, and its CSV output, are
 for the moment printed to the terrminal (or eventually to a log file).
 
