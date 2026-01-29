@@ -7,9 +7,9 @@ of the AAMA application is constituted by three categories of Python
 and shell scripts which operate on the data in the `~/aama-data/data/`
 language directories. 
 
-1. Shell scripts to launch and update the datastore.
-2. Python scripts to maintain and prepare the data files.
-3. Python scripts to display and manipulate paradigm data.
+1. Shell scripts to launch and update the datastore [`sh` and `rq` files].
+2. Python scripts to maintain and prepare the data files [`pdgmDict- . . .` files]
+3. Python scripts to display and manipulate paradigm data.['pdgmDisp . . .` files]
 
 ### 1. Shell scripts to launch and update the datastore.
 (The shell scripts are all basically the work of Gregg Reynolds.)
