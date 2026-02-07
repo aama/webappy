@@ -31,13 +31,14 @@ and further here in [github.aama.io](https://aama.github.io./)
 
     1.2 `aama-datastore-update.sh ../aama-data/data/[LANG]`:
  This script needs to be run whenever new or revised data are added 
-to a language's data file in one of the
-`~/aama-data/data/` language directories. The script calls  
-`fudelete.sh` to delete the former language graph, `fuquery-gen.sh`
+to a language's data file in one of the `~/aama-data/data/` language 
+directories. The script calls `fudelete.sh` 
+to delete the former language graph, `fuquery-gen.sh`
 to run the queries `count-triples.rq` and `list-graphs.rq` before and after
 deletion, `aama-ttl2fuseki.sh`  to load a new language graph into the
 datastore, and `aama-cp2lngrepo.sh` to upload the new/transformed  data 
 to the local and github repositories.
+
 
     1.3 `aama-cpwebappy2lngrepo.sh`: 
 This script performs the same copy and upload functions for
