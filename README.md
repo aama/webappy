@@ -1,3 +1,5 @@
+# Afro-Asiatic Morphology Archive
+
 ## AAMA Application Software
 
 There are a number of Python and shell scripts in the webappy directory
@@ -7,9 +9,9 @@ of the AAMA application is constituted by three categories of Python
 and shell scripts which operate on the data in the `~/aama-data/data/`
 language directories. 
 
-1. Shell scripts to launch and update the datastore [`sh` and `rq` files].
-2. Python scripts to maintain and prepare the data files [`pdgmDict- . . .` files]
-3. Python scripts to display and manipulate paradigm data.['pdgmDisp . . .` files]
+1. Shell scripts to launch and update the datastores: `sh` and `rq` files.
+2. Python scripts to maintain and prepare the data files: `pdgmDict- . . .` files.
+3. Python scripts to display and manipulate paradigm data: `pdgmDisp . . .` files.
 
 ### 1. Shell scripts to launch and update the datastore.
 (The shell scripts are all basically the work of Gregg Reynolds.)
@@ -41,7 +43,8 @@ to the local and github repositories.
 This script performs the same copy and upload functions for
 the application shell and Python scripts. 
 
-### 2. Python scripts to generate indices and transformations of the json data files. 
+### 2. Python scripts to generate indices and transformations of the json
+ data files. 
 
     2.1 `pdgmDict-pvlists.py [LANG]`: 
 This script generates a file 
@@ -68,7 +71,16 @@ and which determines the order of the properties whose values constitute
 the paradigm 'name'.
         
     2.3 `pdgmDict-lexemes.py [LANG]`: 
-The lexemes associated with paradigms in the `LANG-pdgms.json` (and corresponding `LANG-pdgms.ttl`) files are identified by a `lexemeID` which could in principal be any arbitrary alphanumeric symbol sequence, but which in practice and for memnonic convenience are lower-ascii approximations of the lexeme's lemma. This script, in conjunction with `pdgmDict-lexCheck.py` and `pdgmDict-lexRev.py`, generates a `lexemes` section consisting of   dummy lexeme  entries (e.g., `lemma = '[x]', gloss = '[y]'`) for every lexemeID. This 'lexemes' section must be subsequently filled out by hand (or in an ideal case be linked programmatically with a digital lexicon of the language in question).
+The lexemes associated with paradigms in the `LANG-pdgms.json` (and 
+corresponding `LANG-pdgms.ttl`) files are identified by a `lexemeID` which 
+could in principle be any arbitrary alphanumeric symbol sequence, but which in 
+practice and for memnonic convenience are lower-ascii approximations of the 
+lexeme's lemma. This script, in conjunction with `pdgmDict-lexCheck.py` and 
+`pdgmDict-lexRev.py`, generates a `lexemes` section consisting of   dummy 
+lexeme  entries (e.g., `lemma = '[x]', gloss = '[y]'`) for every lexemeID. 
+This 'lexemes' section must be subsequently filled out by hand (or in an ideal 
+case be linked programmatically with a digital lexicon of the language in 
+question).
 
     2.4 `pdgmDict-json2ttl.py [LANG]`: 
 After all the foregoing file modifications, this script transforms, section
@@ -79,7 +91,9 @@ includes some 'predicates' from the various RDF semantics applications.
     2.5 Assorted `pdgmDict-MANIPULATION.py` scripts:
 There are in addition a number of scripts aimed at ordering, formatting, 
 or extracting information from the 'LANG-pdgms.json' files:
+
     - `pdgmDict-jreplace.py`
+
     
     - `pdgmDict-lablesort.py`
     
@@ -97,7 +111,8 @@ or extracting information from the 'LANG-pdgms.json' files:
     
     - `pdgmDict-template.py`
     
-(For their functions, see the introductory material of the individual script texts.)
+(For their functions, see the introductory material of the individual 
+script texts.)
 
 
 
@@ -146,15 +161,32 @@ display 'pivoted' on the value for 'tam'.
     3.2 `pdgmDisp-baseApp-GPDGM.py`:
     
 As its name suggests, this script offers a generalization of the notion 
-"paradigm". In many grammatical traditions (cf. the familiar "APPENDIX: PARADIGMS" 
-of the standard Indoeuropean and Afroasiatic grammars, but also, e.g. 2nd millennium
-B.C. Sumerian [OIP; Gragg]), this is a complete enumeration of the forms considered to model/exemplify a morphological system. This is realized as an exhaustive set of tabular presentations each giving, e.g.:
+"paradigm". In many grammatical traditions (cf. the familiar
+ "APPENDIX: PARADIGMS" of the standard Indoeuropean and Afroasiatic grammars, 
+but also, e.g. 2nd millennium B.C. Sumerian [OIP; Gragg]), this is a complete 
+enumeration of the forms considered to model/exemplify a morphological system. 
+This is realized as an exhaustive set of tabular presentations each giving, 
+e.g.:
 
-   1) for one possible combination out of all the relevant morphological catefories: `part-of-speech`, `tense`, `aspect`, 'mood', `case`, 'inflectional class`, etc. (= the `property: value' list given in the `common` portion of each `termcluster` in `LANG-pdgms.json' )
+   1) for one possible combination out of all the relevant morphological 
+catefories: `part-of-speech`, `tense`, `aspect`, 'mood', `case`, 'inflectional
+ class`, etc. (= the `property: value' list given in the `common` portion of 
+each `termcluster` in `LANG-pdgms.json' )
     
-    2) the forms associated with the possible combinations of (e.g., for verbs) the `number`, `person`, `gender` properties ( = the 'terms' table [list of lists] of the lexemes characterized by the 'common' property set.
+    2) the forms associated with the possible combinations of (e.g., for verbs)
+ the `number`, `person`, `gender` properties ( = the 'terms' table [list of 
+lists] of the lexemes characterized by the 'common' property set.
 
-In 'pdgmDisp-baseApp-GPDGM.py` we have this same structure of a set of 'common' property-value pairs and a "table" of 'terms', except that the `commmon` and `terms` except that the set of property-values associated with each is completely at the discretion of the investigator. Obviously the regular paradigms of the 'LANG-pdgms.json' files are a special case of GPDGM displays, as are a very large number of `common`-`term` combinations which do not correspond to any possible or occurring form. But by exploring occurring combinations of interest, including ones which involve distinct languages, this dislay routine opens up the possibility of many potentially interesting and relevant form tables.
+In 'pdgmDisp-baseApp-GPDGM.py` we have this same structure of a set of 'common'
+ property-value pairs and a "table" of 'terms', except that the `commmon` and 
+`terms` except that the set of property-values associated with each is 
+completely at the discretion of the investigator. Obviously the regular 
+paradigms of the 'LANG-pdgms.json' files are a special case of GPDGM displays, 
+as are a very large number of `common`-`term` combinations which do not 
+correspond to any possible or occurring form. But by exploring occurring 
+combinations of interest, including ones which involve distinct languages, 
+this dislay routine opens up the possibility of many potentially interesting 
+and relevant form tables.
     
   
     3.3 `pdgmDisp-formsearch.py`: 
@@ -185,7 +217,9 @@ the paradigms as in the baseApp script.
 
     3.4 `pdgmDisp-pnames.py`:
 
-This program simply enables the uiser to generate and display, presumably on an experimental basis, a "paradigm-name" list in a different order from that dictated by the `pdgmPropOrder` feature of the `LANG-pdgms.json` file.
+This program simply enables the uiser to generate and display, presumably on 
+an experimental basis, a "paradigm-name" list in a different order from that 
+dictated by the `pdgmPropOrder` feature of the `LANG-pdgms.json` file.
 
     3.5 `pdgmDispQuery.py`: 
     
@@ -195,4 +229,5 @@ These queries are formed from the display data request by one or more of the
  `query()` functions contained in this script and which have been imported
 into the display script. The query itself, and its CSV output, are
 for the moment printed to the terrminal (or eventually to a log file).
+
 
