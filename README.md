@@ -93,24 +93,23 @@ includes some 'predicates' from the various RDF semantics applications.
 There are in addition a number of scripts aimed at ordering, formatting, 
 or extracting information from the 'LANG-pdgms.json' files:
 
-    - `pdgmDict-jreplace.py`
-
+    - pdgmDict-jreplace.py
     
-    - `pdgmDict-lablesort.py`
+    - pdgmDict-lablesort.py
     
-    - `pdgmDict-lfam.py`
+    - pdgmDict-lfam.py
     
-    - `pdgmDict-lname2labb.py`
+    - pdgmDict-lname2labb.py
     
-    - `pdgmDict-propsets-indiv.py`
+    - pdgmDict-propsets-indiv.py
     
-    - `pdgmDict-propsets-merged.py`
+    - pdgmDict-propsets-merged.py
     
-    - `pdgmDict-reorderPdgmCols.py`
+    - pdgmDict-reorderPdgmCols.py
     
-    - `pdgmDict-sourceBib.py`
+    - pdgmDict-sourceBib.py
     
-    - `pdgmDict-template.py`
+    - pdgmDict-template.py
     
 (For their functions, see the introductory material of the individual 
 script texts.)
