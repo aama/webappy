@@ -27,7 +27,7 @@ datastore, this function opens a web page  on `localhost:3030` where
 the datastore can be inspected, and where SPARQL queries can be 
 independently run against the datastore. For dcumentation and installation 
 cf. [Apache Jena Fuseki](https://jena.apache.org/documentation/fuseki2/index.html)
-and further here in [github.aama.io](https://aama.github.io./)
+and further here in [github.aama.io](https://aama.github.io./images/screenshot-PDGM-afr-som-pres.png)
 
     1.2 `aama-datastore-update.sh ../aama-data/data/[LANG]`:
  This script needs to be run whenever new or revised data are added 
