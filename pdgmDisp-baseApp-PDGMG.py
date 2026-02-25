@@ -33,6 +33,7 @@ pdgmDispui-baseApp4.py -- same as above, but with possibility of
 '''
 
 from tkinter import *
+import mss
 from tkinter import ttk
 from SPARQLWrapper import SPARQLWrapper, JSON
 from tabulate import tabulate
@@ -66,6 +67,7 @@ def showLfile(*args):
         #lmsg1.set("%s paradigms:" % Lname)
         mmsg.set("%s morphological props:[vals] list:" % Lname)
         lmsg.set(lname)
+        lmsg1.set("%s paradigms:" % Lname)
         # [08/26/22: get "pdgmPropOrder" value to display
         # at head of pdvals
         lfilename = str("pvlists/" + lname + "-pdgm-values.txt")
@@ -270,7 +272,7 @@ def displayPDGM(*args):
         valstring = propsel[1]
     else:
         pvalue = ppropval
-        valstring = "number,person,gender,token,token-note"
+        valstring = "number,person,gender,token"
 
     # possible test for existence of pval (not used here)
     #check character    #if so display it
@@ -658,6 +660,16 @@ def makePdgmDict(*args):
         dictpdgms[sdp[0]] = sdp[1]
     return dictpdgms
 
+'''
+# Of the five screenshot methods outlined in:
+# https://blog.finxter.com/5-ways-to-take-a-screenshot-of-a-window-using-python-tkinter/
+# the following seems to work the best.
+
+'''
+def take_screenshot():
+    with mss.mss() as sct:
+        sct.shot(output='screenshot10.png')
+
 languagenames = ['aari', 'afar', 'alaaba', 'alagwa', 'akkadian-ob', 'arabic', 'arbore', 'awngi', 'bayso', 'beja-alm', 'beja-hud', 'beja-rei', 'beja-rop', 'beja-van', 'beja-wed', 'berber-ghadames', 'bilin', 'boni-jara', 'boni-kijee-bala', 'boni-kilii', 'burji-sas', 'burji-wed','burunge', 'coptic-sahidic', 'dahalo', 'dhaasanac', 'dizi', 'egyptian-middle', 'elmolo', 'gawwada', 'gedeo', 'geez', 'hadiyya', 'hausa', 'hdi', 'hebrew', 'iraqw', 'kambaata', 'kemant', 'khamtanga', 'koorete', 'maale', 'mubi', 'oromo', 'rendille', 'saho', 'shinassha', 'sidaama', 'somali', 'syriac', 'tsamakko', 'wolaytta', 'yaaku', 'yemsa']
 
 #pcount = "1"
@@ -670,7 +682,7 @@ languagenames = ['aari', 'afar', 'alaaba', 'alagwa', 'akkadian-ob', 'arabic', 'a
 # Would addition of scrollbar to lquery or lpdgm give more optioms?
 root = Tk()
 root.geometry('1200x1200')
-root.title('Display - gPDGM')
+root.title('Display - PDGMG')
 # Configure cols and rows
 # from UIa
 root.grid_columnconfigure(0, weight=1)
@@ -814,6 +826,8 @@ pdisp.set('paradigm ....')
 lbox.selection_set(0)
 showLfile()
 
+# Take the screenshot after 1 second (increase if necessary)
+#root.after(100000, take_screenshot)
 
 root.mainloop()
 
@@ -832,15 +846,19 @@ pos:Verb,conjClass:Prefix,clauseType:Main,lexeme:yiqiin,polarity:Affirmative,num
 pos:Verb,conjClass:Suffix,clauseType:Main,polarity:Affirmative,number:Singular,person:Person3,gender:Masc
 	lexeme:joogso+kari+samee+sug,tam,token 
 TODO:conjSubClass,lexeme:joogso+kari+samee+sug,tam,token
+
 Verb,Suffix,Main,Affirmative,Singular,Person3,Masc	
 conjSubClass,lexeme:joogso+kari+samee+sug,tam,token
 conjSubClass,lexeme;tam;token
+
 Verb,Prefix,Main,Affirmative,Singular,Person3,Masc	
 lexeme:yidi+yiil+yimi+yiqiin,gloss,tam,token
 lexeme,gloss;tam;token
+
 Verb,Main,Affirmative,Singular,Person3,Masc
-conjClass,lexeme:yiil+yiqiin+joogso+sug,gloss,tam,to
+conjClass,lexeme:yiil+yiqiin+joogso+sug,gloss,tam,token
 conjClass,lexeme,gloss;tam;token
+
     # NOTE:
     # The default pivot list assumes a tripartite select-list as 
     # entered in the 'props_entry' and repeated in the 'select' list
