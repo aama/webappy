@@ -27,7 +27,7 @@ datastore, this function opens a web page  on `localhost:3030` where
 the datastore can be inspected, and where SPARQL queries can be 
 independently run against the datastore. For dcumentation and installation 
 cf. [Apache Jena Fuseki](https://jena.apache.org/documentation/fuseki2/index.html)
-and further here in ![github.aama.io](https://aama.github.io./images/screenshot-PDGM-afr-som-pres.png)
+and further here in [github.aama.io](https://aama.github.io./images/screenshot-PDGM-afr-som-pres.png)
 
     1.2 `aama-datastore-update.sh ../aama-data/data/[LANG]`:
  This script needs to be run whenever new or revised data are added 
@@ -151,12 +151,17 @@ entering of a comma-separated list of the sequence-numbers of two or more
  displayed paradigms, followed by a colon, followed by an indication
 of the 'pivot' category to be compared.
 
-For example if the third and fifth paradigm displayed were the Present
-and Perfedt 'tam' value of the Afar Class1 Verb Affirmative  uduur, and 
-one wanted a side-by-side display of these tam forms, one wou;d
-enter *3,5:tam*  in the text box, push the 'Combine Paradigms' button,
-and see (for the moment, first) a sequential display of the paradigms, and a
-display 'pivoted' on the value for 'tam'.
+One starts thus with an [initial screen.](https://aama.github.io./images/screenshot-PDGM-blank.png)
+
+If one were to go on to choose to see, first, the Afar paradigm 
+for the Imperfect Affirmative of the Prefix-class Verb 'uduur', and then the
+`PresentGeneral affirmative of the main-clause prefix-class Somali verb 'iyqiin'`
+and one wanted then to see
+the two verb paradigms side-by-side with columns labeled with language
+and tam one would enter in the`Combine Paradigms` box a comma-separated list of the paradigm display numbers, 
+followed by a `:` followed by a comma separated list of the column properties, thus:
+`1,2:language,tam` and obtain the
+[parallel paradigm presentation.](https://aama.github.io./images/screenshot-PDGM-afr-som-pres.png)
 
     3.2 `pdgmDisp-baseApp-GPDGM.py`:
     
