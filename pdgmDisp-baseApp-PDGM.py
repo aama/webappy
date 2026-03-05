@@ -4,7 +4,7 @@ Comma-separted strings of property values in listbox are keys to full
 pdgm-defining prop:val strings (pvstrings/pdgm-dict-LANG.py).
 SPARQL query for pdgm  derived by pdgmDisp.query.
  Widgets and grid modueled on Mark Roseman, Modern Tkinter -- cf. esp. pp. 67-70.
-NOTE: In this one-frame version of pdgmDispUI, paradigm is inserted
+NOTE: In this one-fram version of pdgmDispUI, paradigm is inserted
 into TK text widget lpdgm, and the SPARQL query formed in pdgmDispQuery
 is printed to the terminal.
 
@@ -12,6 +12,7 @@ is printed to the terminal.
 
 from tkinter import * 
 from tkinter import ttk
+import mss
 from SPARQLWrapper import SPARQLWrapper, JSON
 from tabulate import tabulate
 import pandas as pd
